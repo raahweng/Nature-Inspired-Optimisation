@@ -16,7 +16,7 @@ def initialise(bounds,N,fobj, maxnfe):
     global es
     #Initialise CMA-ES object from library with initial random seed, initial std 10 and bounds to positive real numbers
     population = np.random.uniform(bounds[0], bounds[1], N)
-    es = cma.CMAEvolutionStrategy(population, 10)
+    es = cma.CMAEvolutionStrategy(population, 0.5, {'bounds': [bounds[0], bounds[1]]})
     return population
 
 def name():

@@ -12,7 +12,7 @@ ax = fig.gca(projection='3d')
 X = np.arange(-5, 5, 0.25)
 Y = np.arange(-5, 5, 0.25)
 X, Y = np.meshgrid(X, Y)
-Z = -np.cos(X)*np.cos(Y) * np.exp(-(X-np.pi)**2 -(Y-np.pi)**2)
+Z = -np.sin(X) * np.sin( (X**2) / np.pi ) ** (2*10) -np.sin(Y) * np.sin( 2*(Y**2) / np.pi ) ** (2*10)
 
 
 
@@ -21,8 +21,10 @@ Z = -np.cos(X)*np.cos(Y) * np.exp(-(X-np.pi)**2 -(Y-np.pi)**2)
 surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm,linewidth=0, antialiased=False)
 
 
-# Customize the z axis.
-ax.set_zlim(0, 10)
+ax.set_xlim(0, 3.141)
+ax.set_ylim(0, 3.141)
+ax.set_zlim(-2, 5)
+
 ax.zaxis.set_major_locator(LinearLocator(10))
 ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
 

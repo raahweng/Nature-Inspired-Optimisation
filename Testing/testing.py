@@ -17,6 +17,8 @@ minima = t.fminima()
 def fittest(population, fobj):
     if len(np.shape(population)) == 1:
         return fobj(population)
+    elif np.shape(population)[1] == 1:
+        return fobj(population)
     else:
         return min([fobj(i) for i in population])
 
@@ -31,7 +33,7 @@ def test(alg, fobj, fobjstr, N, maxnfe, tol):
     while True:
         if nfe >= maxnfe:
             break
-        if fit - minima[fobjstr] < tol:
+        if abs(fit - minima[fobjstr]) < tol:
             break
         population = alg.f(population, fobj, bounds[fobjstr], N, ite, maxnfe)
         ite += 1
@@ -42,27 +44,74 @@ def test(alg, fobj, fobjstr, N, maxnfe, tol):
     #plt.show()
     return hist
 
+# counter = 0
+# for i in range(100):
+#     hist = test(BA, t.dropwave, "dropwave", 5, 10000, 1e-5)
+#     print(abs(hist[-1] - minima["dropwave"]))
+#     if len(hist) >= 10000/BA.nfe(1)+1:
+#         counter += 1
+#     else:
+#         pass
+# print(counter)
+
+#test(SA, t.sphere, "sphere", 10, 10000, 1e-3)
+
+# import scipy.optimize
+# alg = scipy.optimize.minimize(t.michalewicz, np.random.uniform(bounds["michalewicz"][0], bounds["michalewicz"][1], (2,1)), method="BFGS")
+# sol = alg.x
+# print(alg)
+
+
+
+
+def testadd(alg, fobj, fobjstr, N, maxnfe, tol):
+    trials = []
+    for i in range(100):
+        population = alg.initialise(bounds[fobjstr], N, fobj, maxnfe)
+        fit = fittest(population, fobj)
+        start = fit
+        nfe = 0
+        nfeinc = alg.nfe(1)
+        ite = 0
+        while True:
+            if nfe >= maxnfe:
+                break
+            if abs(fit - minima[fobjstr]) < tol:
+                break
+            population = alg.f(population, fobj, bounds[fobjstr], N, ite, maxnfe)
+            ite += 1
+            nfe += nfeinc
+            fit = fittest(population, fobj)
+        trials.append([nfe, start, fit])
+    return trials
+
+    
 def testset(alg, filename):
     data = []
-    for i in range(2):
-        data.append(test(alg, t.sphere, "sphere", 2, 10000, 1e-10))
-        data.append(test(alg, t.bartelsconn, "bartelsconn", 2, 10000, 1e-10))
-        data.append(test(alg, t.dropwave, "dropwave", 2, 10000, 1e-10))
-        data.append(test(alg, t.easom, "easom", 2, 10000, 1e-10))
-        data.append(test(alg, t.sphere, "sphere", 10, 10000, 1e-10))
-        data.append(test(alg, t.rotatedhe, "rotatedhe", 10, 10000, 1e-10))
-        data.append(test(alg, t.ackley, "ackley", 10, 10000, 1e-10))
-        data.append(test(alg, t.schwefel, "schwefel", 10, 10000, 1e-10))
-        data.append(test(alg, t.rastrigin, "rastrigin", 10, 10000, 1e-10))
-        data.append(test(alg, t.rosenbrock, "rosenbrock", 10, 10000, 1e-10))
-        data.append(test(alg, t.zakharov, "zakharov", 10, 10000, 1e-10))
-        data.append(test(alg, t.michalewicz, "michalewicz", 10, 10000, 1e-10))
-        data.append(test(alg, t.step, "step", 10, 10000, 1e-10))
+    data.append(testadd(alg, t.sphere, "sphere", 2, 10000, 1e-3))
+    data.append(testadd(alg, t.bartelsconn, "bartelsconn", 2, 10000, 1e-3))
+    data.append(testadd(alg, t.dropwave, "dropwave", 2, 10000, 1e-3))
+    data.append(testadd(alg, t.easom, "easom", 2, 10000, 1e-3))
+    data.append(testadd(alg, t.michalewicz, "michalewicz", 2, 10000, 1e-3))
+    data.append(testadd(alg, t.schwefel, "schwefel", 2, 10000, 1e-3))
+    data.append(testadd(alg, t.rastrigin, "rastrigin", 5, 10000, 1e-3))
+    data.append(testadd(alg, t.sphere, "sphere", 10, 10000, 1e-3))
+    data.append(testadd(alg, t.rotatedhe, "rotatedhe", 10, 10000, 1e-3))
+    data.append(testadd(alg, t.ackley, "ackley", 10, 10000, 1e-3))
+    data.append(testadd(alg, t.rosenbrock, "rosenbrock", 10, 10000, 1e-3))
+    data.append(testadd(alg, t.zakharov, "zakharov", 10, 10000, 1e-3))
+    data.append(testadd(alg, t.step, "step", 10, 10000, 1e-3))
     pickle.dump(data, open( filename, "wb" ))
 
 testset(GA, "GA.p")
-print(len(pickle.load( open( "GA.p", "rb" ) )))
+testset(DE, "DE.p")
+testset(CMAES, "CMAES.p")
+testset(SA, "SA.p")
+testset(PSO, "PSO.p")
+testset(BA, "BA.p")
 
-#test(BA, t.sphere, "sphere", 2, 10000, 1e-10)
+# for i in pickle.load( open( "BA.p", "rb" )):
+#     print(i)
+
 
 

@@ -2,23 +2,23 @@ import numpy as np
 import random
 
 psize = 60
-cp = 2
-cg = 2
+cp = 1
+cg = 1
 wmax = 0.5
 wmin = 0.5
 
 position, velocity, pbest, gbest = 0,0,0,0
 
-def f(population, fobj, bounds, N, ite, maxite):
+def f(population, fobj, bounds, N, ite, maxnfe):
     global position, velocity, pbest, gbest, wmax, wmin
 
-    w=wmax-(wmax-wmin)*ite/maxite
+    w=wmax-(wmax-wmin)*nfe(1)/maxnfe
     for i in range(psize):
         for j in range(N):
             rp, rg = random.random(), random.random()
             velocity[i][j] = w*velocity[i][j] + cp*rp*(pbest[i][j]-position[i][j]) + cg*rg*(gbest[j]-position[i][j])
         position[i] += velocity[i]
-        
+        np.clip(position[i], bounds[0], bounds[1])
         pfittest = fobj(pbest[i])
         pfitness = fobj(position[i])
         if pfitness < pfittest:

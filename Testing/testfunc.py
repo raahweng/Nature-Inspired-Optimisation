@@ -33,7 +33,7 @@ def zakharov(x):
     return np.sum(x**2) + np.sum(0.5 * x * np.arange(1,np.shape(x)[0]+1))**2 + np.sum(0.5 * x * np.arange(1,np.shape(x)[0]+1))**4
 
 def michalewicz(x):
-    return - np.sum(np.sin(x) * np.sin( np.arange(1,np.shape(x)[0]+1) * x**2 / np.pi ) ** 2*10)
+    return -np.sum( np.sin(x) * np.sin( (np.arange(1,np.shape(x)[0]+1) * (x**2)) / np.pi ) ** (2*10) )
 
 def step(x):
     return np.sum(np.floor(np.abs(x)))
@@ -65,7 +65,7 @@ minima = {
     "rastrigin": 0,
     "rosenbrock": 0,
     "zakharov": 0,
-    "michalewicz": -9.6601517156,
+    "michalewicz": -4.6876581791, #	-1.8013034101, -4.6876581791, -9.6601517156
     "step": 0
     }
 
