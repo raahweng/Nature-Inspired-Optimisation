@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 #C should be positive definite and therefore there shouldn't be any negative numbers
 #z, zmean, pc, C have negatives in them rn
 
-N = 25                                  #Number of points in Brachistochrone
+N = 26                                  #Number of points in Brachistochrone
 xmean = np.random.uniform(0,1, (N,1))   #Initial random means (uniformly distributed)
 sigma = 0.5                             #Step size (actually the standard deviation)
 lmda = 4 + math.floor(3*math.log(N))    #Number of offspring (optimal?)
@@ -53,10 +53,13 @@ def fitness(vector):
         v1 = math.sqrt(v1 ** 2+2*9.8*dy)    #Final velocity set to the initial velocity of next segment
     return time
 
+def check_symmetric(a, rtol=1e-05, atol=1e-08):
+    return np.allclose(a, a.T, rtol=rtol, atol=atol)
+def is_pos_def(x):
+    return np.all(np.linalg.eigvals(x) > 0)
 
 while True:
     #Sampling
-    print("test")
     for i in range(lmda):
         z[:,i] = np.random.multivariate_normal(np.zeros(N), np.identity(N))  #Random normally-distributed vector: individual 
         x[:,i] = np.transpose(xmean + sigma * matmul3(B,D,z[:,i][:, np.newaxis]))   #Mutate individual using xmean
@@ -65,7 +68,6 @@ while True:
         #x[:,i] = np.random.multivariate_normal(np.full(N, xmean), (sigma ** 2) * C)   #Sampled from Normal Distribution, Mean xmean and Covariance = (Variance*C)
             
         times[i] = fitness(x[:,i])   #Fitness evaluation
-
     sort = np.argsort(times)
     times.sort()    
     #times = list(reversed(times[sort[::-1]]))    #Sort by Fitness
@@ -81,19 +83,25 @@ while True:
     sigma *= np.exp((cs/damps)*(np.linalg.norm(ps)/chiN - 1))   #Update Step size (Sigma)
     
     pc = (1-cc)*pc + hsig * math.sqrt(cc*(2-cc)*mueff) * matmul3(B,D,zmean.reshape(N,1))   #Conjugate evolution path update
-
+    
+    temp = (1-c1-cmu) * C + c1 * (np.matmul(pc,np.transpose(pc)) + (1-hsig) * cc*(2-cc) * C) + cmu * matmul3(matmul3(B, D, z[:,sort[0:mu]]), np.diag(weights), np.transpose(matmul3(B, D, z[:,sort[0:mu]])))
+    if np.isnan(temp).any() or False in np.isreal(C):
+        print("caught it")
+        print(C)
+        quit()
     C = (1-c1-cmu) * C + c1 * (np.matmul(pc,np.transpose(pc)) + (1-hsig) * cc*(2-cc) * C) + cmu * matmul3(matmul3(B, D, z[:,sort[0:mu]]), np.diag(weights), np.transpose(matmul3(B, D, z[:,sort[0:mu]])))     #Adapt Covariance Matrix C
-
+    
 
     if counteval - eigenval >  lmda/(c1+cmu)/N/10:
         eigenval = counteval
         C = np.triu(C) + np.transpose(np.triu(C,1))   #Make C symmetrical
-        B, D = np.linalg.eig(C)
+        try:
+            B, D = np.linalg.eig(C)
+        except:
+            print(C)
+            quit()
         B = np.diag(B)
-        temp = D
         D = np.diag(np.sqrt(np.diag(D)))
-        if True in np.isnan(D):
-            print("oh no")
     print()
 
 
