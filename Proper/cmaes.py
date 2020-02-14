@@ -38,7 +38,7 @@ z = np.zeros((N,lmda))
 times = np.zeros(lmda)
 
 def matmul3(a,b,c):
-    return np.matmul(np.matmul(a, b), c)
+    return np.matmul(a, np.matmul(b, c))
 
 def fitness(vector):
     vector = np.transpose(vector)
@@ -55,8 +55,13 @@ def fitness(vector):
 
 def check_symmetric(a, rtol=1e-05, atol=1e-08):
     return np.allclose(a, a.T, rtol=rtol, atol=atol)
+
 def is_pos_def(x):
-    return np.all(np.linalg.eigvals(x) > 0)
+    if np.all(np.linalg.eigvals(x) > 0):
+        print("Positive Definite")
+    else:
+        print("Not Positive Definite")
+    
 
 while True:
     #Sampling
@@ -72,8 +77,8 @@ while True:
     times.sort()    
     #times = list(reversed(times[sort[::-1]]))    #Sort by Fitness
 
-    xmean = np.matmul(x[:,sort[0:mu]], weights).reshape(N,1)      #Sample top candidates as parents, update xmean as weighted mean of x
-    zmean = np.matmul(z[:,sort[0:mu]], weights).reshape(N,1) 
+    xmean = np.matmul(x[:, sort[::-1]][:, 0:mu], weights).reshape(N,1)      #Sample top candidates as parents, update xmean as weighted mean of x
+    zmean = np.matmul(z[:, sort[::-1]][:, 0:mu], weights).reshape(N,1) 
 
     ps = (1-cs)*ps + math.sqrt(cs*(2-cs)*mueff) * np.matmul(B, zmean).reshape(N,1)   #Cumulative Step Length Adaptation: changes evolution path corresponding to "success" so far
     if (np.linalg.norm(ps) / (math.sqrt(1-(1-cs) ** (2*counteval/lmda)))) < chiN * (1.4+2/(N+1)):  #Heaviside Function: stalls update of pc if  if ||pc|| is large / helps when step size is too small
@@ -83,14 +88,10 @@ while True:
     sigma *= np.exp((cs/damps)*(np.linalg.norm(ps)/chiN - 1))   #Update Step size (Sigma)
     
     pc = (1-cc)*pc + hsig * math.sqrt(cc*(2-cc)*mueff) * matmul3(B,D,zmean.reshape(N,1))   #Conjugate evolution path update
-    
-    temp = (1-c1-cmu) * C + c1 * (np.matmul(pc,np.transpose(pc)) + (1-hsig) * cc*(2-cc) * C) + cmu * matmul3(matmul3(B, D, z[:,sort[0:mu]]), np.diag(weights), np.transpose(matmul3(B, D, z[:,sort[0:mu]])))
-    if np.isnan(temp).any() or False in np.isreal(C):
-        print("caught it")
-        print(C)
-        quit()
+
     C = (1-c1-cmu) * C + c1 * (np.matmul(pc,np.transpose(pc)) + (1-hsig) * cc*(2-cc) * C) + cmu * matmul3(matmul3(B, D, z[:,sort[0:mu]]), np.diag(weights), np.transpose(matmul3(B, D, z[:,sort[0:mu]])))     #Adapt Covariance Matrix C
     
+    is_pos_def(C)
 
     if counteval - eigenval >  lmda/(c1+cmu)/N/10:
         eigenval = counteval
