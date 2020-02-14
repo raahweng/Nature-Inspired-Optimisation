@@ -5,7 +5,7 @@ from pygame.color import *
 #NB: pymunk to pygame co-ordinates: y*-1 +600
 
 #Values to toggle
-pointnum = 20
+pointnum = 25
 popnum = 25
 F = 0.8 ## 0-2 #0.8 #0.25
 CR = 0.9 ## 0-1 #0.9 #0.55
@@ -52,6 +52,29 @@ def fitness(alist):
             time += math.inf
         v1 = math.sqrt(v1 ** 2+2*9.8*dy)
     return time
+
+##def fitness(vector):
+##    vector[0] = 500
+##    vector[-1] = 100
+##    t = 0
+##    v1 = 0
+##
+##    for i in range(pointnum-1):
+##        dy = vector[i+1]-vector[i]
+##        if (v1**2 - 2*9.81*dy) < 0:
+##            t = 100000
+##            break
+##        elif i == 0 and dy > 0:
+##            t = 100000
+##            break
+##        d = math.sqrt((20/pointnum)**2 + dy**2)
+##        if (2*d)*(-v1 + math.sqrt(v1**2 - 2*9.81*dy))/(9.81*dy) < 0:
+##            t += (2*d)*(-v1 - math.sqrt(v1**2 - 2*9.81*dy))/(9.81*dy)
+##        else:
+##            t += (2*d)*(-v1 + math.sqrt(v1**2 - 2*9.81*dy))/(9.81*dy)
+##        v1 = math.sqrt(v1**2 - 2*9.81*dy)
+##
+##    return t
 
 def recombinate(population):
     for i in range(popnum):

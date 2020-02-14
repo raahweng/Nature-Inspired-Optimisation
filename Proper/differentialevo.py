@@ -53,7 +53,7 @@ for i in range(1000):
             my_min = fitness(population[j])
             index = j
     fitgraph.append(fitness(population[index]))
-##    print(str(fitness(population[index])) + "   " + str(i))
+    print(str(fitness(population[index])) + "   " + str(i))
 
 dxlist = []
 for i in range(pointnum):

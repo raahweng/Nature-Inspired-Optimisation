@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 #C should be positive definite and therefore there shouldn't be any negative numbers
 #z, zmean, pc, C have negatives in them rn
 
-N = 26                                  #Number of points in Brachistochrone
+N = 3                                  #Number of dimenstions
 xmean = np.random.uniform(0,1, (N,1))   #Initial random means (uniformly distributed)
 sigma = 0.5                             #Step size (actually the standard deviation)
 lmda = 4 + math.floor(3*math.log(N))    #Number of offspring (optimal?)
@@ -40,26 +40,33 @@ times = np.zeros(lmda)
 def matmul3(a,b,c):
     return np.matmul(a, np.matmul(b, c))
 
-def fitness(vector):
-    vector = np.transpose(vector)
-    time = 0
-    v1 = 0
-    for i in range(N-1):
-        dy = abs(vector[i+1]-vector[i])   #Height of one line segment
-        try:
-            time += (2 * math.sqrt((20/N) ** 2 + dy ** 2))/(v1+math.sqrt(v1 ** 2+2*9.8*dy))   #Time taken for one line segment
-        except ZeroDivisionError:
-            time += math.inf
-        v1 = math.sqrt(v1 ** 2+2*9.8*dy)    #Final velocity set to the initial velocity of next segment
-    return time
+# def fitness(vector):
+#     vector = np.transpose(vector)
+#     time = 0
+#     v1 = 0
+#     for i in range(N-1):
+#         dy = abs(vector[i+1]-vector[i])   #Height of one line segment
+#         try:
+#             time += (2 * math.sqrt((20/N) ** 2 + dy ** 2))/(v1+math.sqrt(v1 ** 2+2*9.8*dy))   #Time taken for one line segment
+#         except ZeroDivisionError:
+#             time += math.inf
+#         v1 = math.sqrt(v1 ** 2+2*9.8*dy)    #Final velocity set to the initial velocity of next segment
+#     return time
+
+def fitness(x):
+    #sphere function; minima at 0,0...
+    return sum(x ** 2)
 
 def check_symmetric(a, rtol=1e-05, atol=1e-08):
     return np.allclose(a, a.T, rtol=rtol, atol=atol)
 
 def is_pos_def(x):
-    if np.all(np.linalg.eigvals(x) > 0):
-        print("Positive Definite")
-    else:
+    try:
+        if np.all(np.linalg.eigvals(x) > 0):
+            print("Positive Definite")
+        else:
+            print("Not Positive Definite")
+    except np.linalg.LinAlgError:
         print("Not Positive Definite")
     
 
@@ -90,8 +97,6 @@ while True:
     pc = (1-cc)*pc + hsig * math.sqrt(cc*(2-cc)*mueff) * matmul3(B,D,zmean.reshape(N,1))   #Conjugate evolution path update
 
     C = (1-c1-cmu) * C + c1 * (np.matmul(pc,np.transpose(pc)) + (1-hsig) * cc*(2-cc) * C) + cmu * matmul3(matmul3(B, D, z[:,sort[0:mu]]), np.diag(weights), np.transpose(matmul3(B, D, z[:,sort[0:mu]])))     #Adapt Covariance Matrix C
-    
-    is_pos_def(C)
 
     if counteval - eigenval >  lmda/(c1+cmu)/N/10:
         eigenval = counteval
