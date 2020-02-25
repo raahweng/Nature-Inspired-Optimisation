@@ -75,32 +75,40 @@ def rosenbrock(x):
 # print(sol)
 
 def eval(alg, popsize, fobj, bounds):
-    sol = []
-    for j in range(10):
+    sol1000 = []
+    sol500 = []
+    for j in range(100):
         if alg != "cma":
             population = np.random.uniform(bounds[0], bounds[1], popsize)
-            for i in range(500):
+            for i in range(1000):
                 population = alg(population, fobj, bounds)
+                if i == 499:
+                    sol500.append(fobj(population[0]))
         else:
             es = cma.CMAEvolutionStrategy(np.random.uniform(bounds[0], bounds[1],(N,1)), 0.5)
-            for i in range(500):
+            for i in range(1000):
                 population = es.ask()
                 es.tell(population, [fobj(x) for x in population])
-        sol.append(fobj(population[0]))
+                if i == 499:
+                    sol500.append(fobj(population[0]))
+        sol1000.append(fobj(population[0]))
         print(j)
-    print("Standard Error: " + str(np.std(sol)))
-    print("Accuracy: " + str(sum(sol)/10))
-    print(sol)
-    print(population[0:10])
+    print("Standard Error: " + str(np.std(sol500)))
+    print("Accuracy: " + str(sum(sol500)/10))
     with open('results.txt', 'a') as f:
-        f.write(str(np.std(sol)) + " " + str(sum(sol)/10))
+        f.write("\n" + str(np.std(sol500)) + " " + str(sum(sol500)/10))
+    print("Standard Error: " + str(np.std(sol1000)))
+    print("Accuracy: " + str(sum(sol1000)/10))
+    with open('results.txt', 'a') as f:
+        f.write("\n" + str(np.std(sol1000)) + " " + str(sum(sol1000)/10))
 
-eval(GA, (GAlmda,N), sphere, [-5.12,5.12])
+
+#eval(GA, (GAlmda,N), sphere, [-5.12,5.12])
 #eval(DE, (DElmda,N), sphere, [-5.12,5.12])
 #eval("cma", None, sphere, [-5.12,5.12])
 #eval(GA, (GAlmda,N), rastrigin, [-5.12,5.12])
 #eval(DE, (DElmda,N), rastrigin, [-5.12,5.12])
-#eval("cma", None, rastrigin, [-5.12,5.12])
+eval("cma", None, rastrigin, [-5.12,5.12])
 #eval(GA, (GAlmda,N), rosenbrock, [-5,10])
 #eval(DE, (DElmda,N), rosenbrock, [-5,10])
 #eval("cma", None, rosenbrock, [-5,10])
