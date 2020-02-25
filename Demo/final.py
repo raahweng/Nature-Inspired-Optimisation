@@ -34,7 +34,7 @@ def brachistochrone(x2,y2):
 #     for i in range(N-1):
 #         try:
 #             v2 = np.sqrt(v1**2 + 2*9.8*(vector[i]-vector[i+1]))
-#             d = np.sqrt(((displayWidth/3-gapWidth*2)/N)**2 + (vector[i]-vector[i+1])**2)
+#             d = np.sqrt(((displayWidth/3-gapWidth*2)/(N-1))**2 + (vector[i]-vector[i+1])**2)
 #             if vector[i+1] == vector[i]:
 #                 break
 #             temp = d*(v2-v1)/(vector[i]-vector[i+1])

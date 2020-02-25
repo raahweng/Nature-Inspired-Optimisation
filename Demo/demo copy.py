@@ -58,7 +58,16 @@ def sphere(x):
 
 #bounds [-5.12,5.12]
 def rastrigin(x):
-    return 10*N + sum([(i**2 - N * np.cos(2 * math.pi * i)) for i in x])
+    return 10*N + sum([(i**2 - 10 * np.cos(2 * math.pi * i)) for i in x])
+
+#bounds [-32.768, 32.768]
+def ackley(x):
+	firstSum = 0.0
+	secondSum = 0.0
+	for i in x:
+		firstSum += i**2.0
+		secondSum += math.cos(2.0*math.pi*i)
+	return -20.0*math.exp(-0.2*math.sqrt(firstSum/N)) - math.exp(secondSum/N) + 20 + math.e
 
 #bounds [-5,10]
 def rosenbrock(x):
@@ -92,7 +101,8 @@ def eval(alg, popsize, fobj, bounds):
                 if i == 499:
                     sol500.append(fobj(population[0]))
         sol1000.append(fobj(population[0]))
-        print(population[0])
+        print(j)
+    print(population[0])
     print("Standard Error: " + str(np.std(sol500)))
     print("Accuracy: " + str(sum(sol500)/10))
     with open('results.txt', 'a') as f:
@@ -106,14 +116,21 @@ def eval(alg, popsize, fobj, bounds):
 #eval(GA, (GAlmda,N), sphere, [-5.12,5.12])
 #eval(DE, (DElmda,N), sphere, [-5.12,5.12])
 #eval("cma", None, sphere, [-5.12,5.12])
+
+#eval(GA, (GAlmda,N), ackley, [-32.768, 32.768])
+#eval(DE, (DElmda,N), ackley, [-32.768, 32.768])
+#eval("cma", None, ackley, [-32.768, 32.768])
+
 #eval(GA, (GAlmda,N), rastrigin, [-5.12,5.12])
 #eval(DE, (DElmda,N), rastrigin, [-5.12,5.12])
 #eval("cma", None, rastrigin, [-5.12,5.12])
+
 #eval(GA, (GAlmda,N), rosenbrock, [-5,10])
 #eval(DE, (DElmda,N), rosenbrock, [-5,10])
 #eval("cma", None, rosenbrock, [-5,10])
 
-opt, es = cma.fmin2(rastrigin, np.random.uniform(-5.12,5.12,(N,1)), 0.5)
+#opt, es = cma.fmin2(ackley, np.random.uniform(-32.768, 32.768,(N,1)), 1)
+
 
 
 

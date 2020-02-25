@@ -25,7 +25,7 @@ def brachistochrone(x2,y2):
     T = theta2 * np.sqrt(R / 9.8)
     return x, y, T
     
-#Also works but im a factor of g out somehow?
+#Works-ish but out by a factor of g somehow?
 # def fitness(vector):
 #     vector[0] = displayHeight-gapWidth*2
 #     vector[-1] = gapWidth*2
@@ -49,6 +49,19 @@ def brachistochrone(x2,y2):
 #     t /= 9.8
 #     return t
 
+#Solution from random stackexchange person
+# def fitness(vector):
+#     vector[0] = displayHeight-gapWidth*2
+#     vector[-1] = gapWidth*2
+#     dx = (displayWidth/3-gapWidth*2)/(N-1)
+#     t=0
+#     for i in range(N-1):
+#         d = np.sqrt(dx**2 + (vector[i]-vector[i+1])**2)
+#         t += d*( np.sqrt(vector[0]-vector[i+1]) - np.sqrt(vector[0]-vector[i]))/(vector[i]-vector[i+1])
+#     t *= np.sqrt(2/9.81)
+#     return t
+
+
 #I dont know how I worked this out but it works so Im not touching it
 def fitness(vector):
      vector[0] = displayHeight-gapWidth*2
@@ -63,6 +76,7 @@ def fitness(vector):
              time += 1000
          v1 = np.sqrt(v1 ** 2+2*9.8*dy)
      return time
+
 
 def GA(population):
     times = np.array([fitness(i) for i in population])
