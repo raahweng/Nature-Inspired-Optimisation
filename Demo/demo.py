@@ -11,10 +11,12 @@ GAmu = 5
 k=2
 #Differential Evolution
 DElmda = 250
-F = 0.25 ## 0-2 #0.8 #0.25
-CR = 0.55 ## 0-1 #0.9 #0.55
+F = 0.25 ## Differential Weight; Range 0-2; Recommended value 0.8
+CR = 0.55 ## Crossover Rate; Range 0-1; Recommended value 0.9
 
+#Calculates equation and time of descent for a Brachistochrone
 def brachistochrone(x2,y2):
+    #Calculate theta2 using Newton-Raphson numerical method + Parametric equation of cycloid
     def f(theta):
         return y2/x2 - (1-np.cos(theta))/(theta-np.sin(theta))
     theta2 = newton(f, np.pi/2)
@@ -24,7 +26,8 @@ def brachistochrone(x2,y2):
     y = R * (1 - np.cos(theta))
     T = theta2 * np.sqrt(R / 9.8)
     return x, y, T
-    
+
+#My solution 1: Using suvat   
 #Works-ish but out by a factor of g somehow?
 # def fitness(vector):
 #     vector[0] = displayHeight-gapWidth*2
@@ -49,42 +52,55 @@ def brachistochrone(x2,y2):
 #     t /= 9.8
 #     return t
 
-#Solution from random stackexchange person
+#My solution 2: Using Conservation of Energy and suvat
 # def fitness(vector):
-#     vector[0] = displayHeight-gapWidth*2
-#     vector[-1] = gapWidth*2
-#     dx = (displayWidth/3-gapWidth*2)/(N-1)
-#     t=0
-#     for i in range(N-1):
-#         d = np.sqrt(dx**2 + (vector[i]-vector[i+1])**2)
-#         t += d*( np.sqrt(vector[0]-vector[i+1]) - np.sqrt(vector[0]-vector[i]))/(vector[i]-vector[i+1])
-#     t *= np.sqrt(2/9.81)
-#     return t
+#      vector[0] = displayHeight-gapWidth*2
+#      vector[-1] = gapWidth*2
+#      time = 0
+#      v1 = 0
+#      for i in range(N-1):
+#          dy = abs(vector[i+1]-vector[i])
+#          try:
+#              time += (2 * np.sqrt(((displayWidth/3-gapWidth*2)/(N-1)) ** 2 + dy ** 2))/(v1+np.sqrt(v1 ** 2+2*9.8*dy))
+#          except ZeroDivisionError:
+#              time += 1000
+#          v1 = np.sqrt(v1 ** 2+2*9.8*dy)
+#      return time
 
-
-#I dont know how I worked this out but it works so Im not touching it
+#Solution from random stackexchange person: Uses Conservation of Energy and Diff/Int w.r.t to create a single sum; Much more efficient than either of my methods
 def fitness(vector):
-     vector[0] = displayHeight-gapWidth*2
-     vector[-1] = gapWidth*2
-     time = 0
-     v1 = 0
-     for i in range(N-1):
-         dy = abs(vector[i+1]-vector[i])
-         try:
-             time += (2 * np.sqrt(((displayWidth/3-gapWidth*2)/(N-1)) ** 2 + dy ** 2))/(v1+np.sqrt(v1 ** 2+2*9.8*dy))
-         except ZeroDivisionError:
-             time += 1000
-         v1 = np.sqrt(v1 ** 2+2*9.8*dy)
-     return time
+    vector[0] = displayHeight-gapWidth*2
+    vector[-1] = gapWidth*2
+    dx = (displayWidth/3-gapWidth*2)/(N-1)
+    t=0
+    for i in range(N-1):
+        d = np.sqrt(dx**2 + (vector[i]-vector[i+1])**2)
+        t += d*( np.sqrt(vector[0]-vector[i+1]) - np.sqrt(vector[0]-vector[i]))/(vector[i]-vector[i+1])
+    t *= np.sqrt(2/9.81)
+    if np.isnan(t):
+        t = 100
+    return t
 
+#Find fitness of fittest individual
+def fittest(population):
+    return min([fitness(i) for i in population])
 
+#Genetic Algorithm; samples from Uniform distribution and uses K-point crossover
 def GA(population):
+
+    #Selection; sort population by fitness
     times = np.array([fitness(i) for i in population])
     sort = list(reversed(times.argsort()))
     population = population[sort[::-1]]
     newpop = []
+
+    #Elitism: add fittest individual to next generation
     newpop.append(population[0])
+
+    #Recombination
     for i in range(1,GAlmda):
+
+        #K-point crossover; select two random individuals and splice them alternately
         pair = (random.randint(0,GAmu-1), random.randint(0,GAmu-1))
         points = random.sample(range(1,N-1), k)
         points.insert(0, 0)
@@ -92,33 +108,42 @@ def GA(population):
         points.sort()
         temp = []
         for j in range(k+1):
-            temp = np.concatenate((temp, population[pair[j%2],points[j]:points[j+1]]))       
+            temp = np.concatenate((temp, population[pair[j%2],points[j]:points[j+1]]))
+
+        #Mutation; 1/N chance of randomly assigning a value to each point besides start and end       
         for j in range(N):
             chance = random.uniform(1,N)
             if chance >= N-1 and j > 0 and j < N-1:
                 temp[j] = random.uniform(0,displayHeight-gapWidth*2)
+
         newpop.append(temp)
     return np.array(newpop)
   
-
+#Differential Evolution
 def DE(population):
     global N, DElmda, F, CR
+
     for i in range(DElmda):
+
+        #Select 3 individuals from population; Mutate one by the weighted difference of the other two; Clip mutant to constraints
         sample = list(range(DElmda))
         sample.remove(i)
         abc = random.sample(sample, 3)
         mutant = population[abc[0]] + F * (population[abc[1]]-population[abc[2]])
         np.clip(mutant, 0, displayHeight-gapWidth*2)
+
+        #Mutate each value in the mutant to the individual's value according to Crossover Rate
         for j in range(N):
             r = random.uniform(0,1)
             if r > CR:
                 mutant[j] = population[i][j]
+        #Replace individual with mutant if fitter
         if fitness(mutant) < fitness(population[i]):
             population[i] = mutant
-    times = [fitness(x) for x in population]
-    sort = list(reversed(np.argsort(times)))
-    return population[sort[::-1]]
+        
+    return population
 
+#Display each line in a population onto pygame GUI; Converts calcualted co-ordiantes into Pygame co-ordinates
 def draw(alg, population):
     colours = ["red", "orange", "yellow", "green", "blue", "purple", "black", "grey"]
     if alg == "GA":
@@ -131,12 +156,14 @@ def draw(alg, population):
     for i in range(np.shape(population)[0]):
         pygame.draw.lines(disp, THECOLORS[colours[i%8]], False, [(x+(displayWidth/3-gapWidth*2)/N*i, y+(displayHeight-gapWidth/2-p)) for i,p in enumerate(population[i])])
 
+#Render text
 def disptext(text, x, y):
     t = font.render(text, True, black)
     tRect = t.get_rect()
     tRect.center = (x/2,y/2)
     disp.blit(t,tRect)
 
+#Pygame variables
 pygame.init()
 displayWidth = 1300
 displayHeight = 600
@@ -149,6 +176,7 @@ black = (0,0,0)
 font = pygame.font.Font("freesansbold.ttf", 32)
 counter = -1
 
+#Main display loop
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -183,10 +211,10 @@ while running:
     CMAESpop = es.ask()
     draw("CMAES", CMAESpop)
     es.tell(CMAESpop, [fitness(x) for x in CMAESpop])
-    
+
     minima = brachistochrone(displayWidth/3-gapWidth*2,displayHeight-gapWidth*4)[-1]
     disptext("% Error: " + str(round((fitness(GApop[0])-minima)/minima*100,3)), displayWidth/3, displayHeight*2-gapWidth*2)
-    disptext("% Error: " + str(round((fitness(DEpop[0])-minima)/minima*100,3)), displayWidth, displayHeight*2-gapWidth*2)
-    disptext("% Error: " + str(round((fitness(CMAESpop[0])-minima)/minima*100,3)), 5*displayWidth/3, displayHeight*2-gapWidth*2)
+    disptext("% Error: " + str(round((fittest(DEpop)-minima)/minima*100,3)), displayWidth, displayHeight*2-gapWidth*2)
+    disptext("% Error: " + str(round((fittest(CMAESpop)-minima)/minima*100,3)), 5*displayWidth/3, displayHeight*2-gapWidth*2)
 
     pygame.display.update()
