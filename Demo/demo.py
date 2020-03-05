@@ -67,7 +67,7 @@ def brachistochrone(x2,y2):
 #          v1 = np.sqrt(v1 ** 2+2*9.8*dy)
 #      return time
 
-#Solution from random stackexchange person: Uses Conservation of Energy and Diff/Int w.r.t to create a single sum; Much more efficient than either of my methods
+#Solution from random stackexchange person: Uses Conservation of Energy and Diff/Int w.r.t to create a single sum; More efficient than either of my methods
 def fitness(vector):
     vector[0] = displayHeight-gapWidth*2
     vector[-1] = gapWidth*2
@@ -77,6 +77,7 @@ def fitness(vector):
         d = np.sqrt(dx**2 + (vector[i]-vector[i+1])**2)
         t += d*( np.sqrt(vector[0]-vector[i+1]) - np.sqrt(vector[0]-vector[i]))/(vector[i]-vector[i+1])
     t *= np.sqrt(2/9.81)
+    #Penalise if impossible to slide uphill
     if np.isnan(t):
         t = 100
     return t
@@ -186,8 +187,10 @@ while running:
     pygame.display.set_caption("Brachistochrone Generation " + str(counter % 300))
     counter += 1
 
+    #Each test lasts 300 generations before restarting and randomly reinitialising the population
     if counter % 300 ==0:
-        #GApop = np.random.multivariate_normal(np.full(N,(displayHeight-gapWidth*2)/2), np.diagflat(np.full(N,10000)), (GAlmda))
+
+        #Uniformly random initialisation of population with fixed start/end point; each algorithm starts with the same population clipped to their respective population size
         if GAlmda > DElmda:
             GApop = np.random.uniform(0,displayHeight-gapWidth*2, (GAlmda,N))
             GApop[:,0] = displayHeight-gapWidth*2
@@ -200,18 +203,21 @@ while running:
             GApop = DEpop[:GAlmda,:]
         es = cma.CMAEvolutionStrategy(DEpop[0], 100)
 
+    #Iterative recombination of population
+    GApop = GA(GApop)
+    DEpop = DE(DEpop)
+    CMAESpop = es.ask()
+    es.tell(CMAESpop, [fitness(x) for x in CMAESpop])
+
+    #GUI stuff
     disptext("Genetic Algorithm", displayWidth/3,gapWidth*1.5)
     disptext("Differential Evolution", displayWidth,gapWidth*1.5)
     disptext("CMA-ES", 5*displayWidth/3,gapWidth*1.5)
-
-    GApop = GA(GApop)
     draw("GA", GApop)
-    DEpop = DE(DEpop)
     draw("DE", DEpop)
-    CMAESpop = es.ask()
     draw("CMAES", CMAESpop)
-    es.tell(CMAESpop, [fitness(x) for x in CMAESpop])
 
+    #Percentage accuracy off Global Minima; Evaluates fittest individual after 300 generations
     minima = brachistochrone(displayWidth/3-gapWidth*2,displayHeight-gapWidth*4)[-1]
     disptext("% Error: " + str(round((fitness(GApop[0])-minima)/minima*100,3)), displayWidth/3, displayHeight*2-gapWidth*2)
     disptext("% Error: " + str(round((fittest(DEpop)-minima)/minima*100,3)), displayWidth, displayHeight*2-gapWidth*2)
