@@ -5,7 +5,7 @@ from pygame.color import *
 
 #Toggle Values
 N = 20 #Dimensions, ie No. of Points
-#Genetc Algorithm
+#Genetic Algorithm
 GAlmda = 150
 GAmu = 5
 k=2
