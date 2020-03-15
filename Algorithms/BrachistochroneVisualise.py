@@ -18,6 +18,7 @@ white = (255,255,255)
 black = (0,0,0)
 font = pygame.font.Font("freesansbold.ttf", 32)
 counter = -1
+ite = 0
 
 N=25
 startend = (displayHeight-gapWidth*2,gapWidth*8)
@@ -76,19 +77,23 @@ def disptext(text, x, y):
 
 #Main display loop
 while running:
+    ite += 1
+    maxite = 400
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
     disp.fill(white)
 
-    pygame.display.set_caption("Brachistochrone Generation " + str(counter % 300))
+    pygame.display.set_caption("Brachistochrone Generation " + str(counter % maxite))
     counter += 1
 
-    #Each test lasts 300 generations before restarting and randomly reinitialising the population
-    if counter % 300 ==0:
+    #Each test lasts maxite generations before restarting and randomly reinitialising the population
+    if counter % maxite ==0:
 
+        ite = 0
         #Uniformly random initialisation of population with fixed start/end point; each algorithm starts with the same population clipped to their respective population size
-        population = alg.initialise(bounds, N)
+        population = alg.initialise(bounds, N, fitness)
         if np.shape(population) == (N,):
             population[0] = startend[0]
             population[-1] = startend[1]
@@ -97,7 +102,7 @@ while running:
             population[:,-1] = startend[1]
 
     #Iterative recombination of population
-    population = alg.f(population, fitness, bounds, N)
+    population = alg.f(population, fitness, bounds, N, ite, maxite)
 
     #GUI stuff
     disptext(alg.name(), displayWidth,gapWidth*1.5)
@@ -106,10 +111,5 @@ while running:
     #Percentage accuracy off Global Minima; Evaluates fittest individual after 300 generations
     minima = brachistochrone(displayWidth-gapWidth*2,startend[0]-startend[1])[-1]
     disptext("% Error: " + str(round((fittest(population)-minima)/minima*100,3)), displayWidth, displayHeight*2-gapWidth*2)
-
-    print(fitness(population[0]))
-
-    if alg.name() == "CMA-ES":
-        time.sleep(0.1)
 
     pygame.display.update()

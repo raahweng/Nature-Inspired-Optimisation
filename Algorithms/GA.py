@@ -4,9 +4,13 @@ import random
 GAlmda = 150
 GAmu = 5
 k=2
+MRmax = 0.1
+MRmin = 0.02
 
 #Genetic Algorithm; samples from Uniform distribution and uses K-point crossover
-def f(population, fobj, bounds, N):
+def f(population, fobj, bounds, N, ite, maxite):
+
+    MR=MRmax-(MRmax-MRmin)*ite/maxite
 
     #Selection; sort population by fitness
     times = np.array([fobj(i) for i in population])
@@ -32,14 +36,14 @@ def f(population, fobj, bounds, N):
 
         #Mutation; 1/N chance of randomly assigning a value to each point besides start and end       
         for j in range(N):
-            chance = random.uniform(1,N)
-            if chance >= N-1 and j > 0 and j < N-1:
+            r = random.uniform(0,1)
+            if r < MR and j > 0 and j < N-1:
                 temp[j] = random.uniform(bounds[0],bounds[1])
 
         newpop.append(temp)
     return np.array(newpop)
 
-def initialise(bounds,N):
+def initialise(bounds,N,fobj):
     population = np.random.uniform(bounds[0], bounds[1], (GAlmda, N))
     return population
 

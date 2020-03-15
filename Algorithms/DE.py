@@ -6,7 +6,7 @@ F = 0.25 ## Differential Weight; Range 0-2; Recommended value 0.8
 CR = 0.55 ## Crossover Rate; Range 0-1; Recommended value 0.9
 
 #Differential Evolution
-def f(population, fobj, bounds, N):
+def f(population, fobj, bounds, N, ite, maxite):
 
     for i in range(DElmda):
 
@@ -28,7 +28,7 @@ def f(population, fobj, bounds, N):
         
     return population
 
-def initialise(bounds,N):
+def initialise(bounds,N,fobj):
     population = np.random.uniform(bounds[0], bounds[1], (DElmda, N))
     return population
 
