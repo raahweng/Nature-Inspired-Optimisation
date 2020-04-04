@@ -43,9 +43,9 @@ def f(population, fobj, bounds, N, ite, maxite):
         newpop.append(temp)
     return np.array(newpop)
 
-def initialise(bounds,N,fobj):
+def initialise(bounds,N,fobj, maxite):
     population = np.random.uniform(bounds[0], bounds[1], (GAlmda, N))
     return population
 
 def name():
-    return ("Genetic Algorithm")
+    return "Genetic Algorithm"

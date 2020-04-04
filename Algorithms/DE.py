@@ -28,9 +28,9 @@ def f(population, fobj, bounds, N, ite, maxite):
         
     return population
 
-def initialise(bounds,N,fobj):
+def initialise(bounds,N,fobj, maxite):
     population = np.random.uniform(bounds[0], bounds[1], (DElmda, N))
     return population
 
 def name():
-    return ("Differential Evolution")
+    return "Differential Evolution"

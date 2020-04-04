@@ -4,8 +4,8 @@ import random
 psize = 60
 cp = 2
 cg = 2
-wmax = 0.6
-wmin = 0.4
+wmax = 0.5
+wmin = 0.5
 
 position, velocity, pbest, gbest = 0,0,0,0
 
@@ -27,7 +27,7 @@ def f(population, fobj, bounds, N, ite, maxite):
     return position
             
 
-def initialise(bounds,N, fobj):
+def initialise(bounds,N, fobj, maxite):
     global position, velocity, pbest, gbest
 
     position = np.zeros((psize, N))
@@ -46,5 +46,5 @@ def initialise(bounds,N, fobj):
     return position
 
 def name():
-    return ("Particle Swarm Optimisation")
+    return "Particle Swarm Optimisation"
 

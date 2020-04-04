@@ -1,4 +1,4 @@
-import sys, pygame, random, time, cma, importlib, time
+import sys, pygame, random, time, cma, importlib
 from scipy.optimize import newton
 import numpy as np
 from pygame.color import *
@@ -20,7 +20,7 @@ font = pygame.font.Font("freesansbold.ttf", 32)
 counter = -1
 ite = 0
 
-N=25
+N = 25
 startend = (displayHeight-gapWidth*2,gapWidth*8)
 bounds = (displayHeight-gapWidth*2,0)
 
@@ -57,28 +57,35 @@ def brachistochrone(x2,y2):
 
 #Find fitness of fittest individual
 def fittest(population):
-    return min([fitness(i) for i in population])
+    if np.shape(population)[1] > 1:
+        return min([fitness(i) for i in population])
+    else:
+        return min(fitness(population))
 
 #Draw population
-def draw(population):
+def draw(population, ite):
     colours = ["red", "orange", "yellow", "green", "blue", "purple", "black", "grey"]
     x, y = gapWidth, gapWidth
-    for i in range(np.shape(population)[0]):
-        pygame.draw.lines(disp, THECOLORS[colours[i%8]], False, [(x+(displayWidth-gapWidth*2)/N*i, y+(displayHeight-gapWidth/2-p)) for i,p in enumerate(population[i])])
-    if alg.name() == "Genetic Algorithm":
-        pygame.draw.lines(disp, THECOLORS[colours[0]], False, [(x+(displayWidth-gapWidth*2)/N*i, y+(displayHeight-gapWidth/2-p)) for i,p in enumerate(population[0])], 5)
+    if alg.name() == "Simulated Annealing":
+        pygame.draw.lines(disp, THECOLORS[colours[0]], False, [(int((x+(displayWidth-gapWidth*2)/N*i)), int(y+(displayHeight-gapWidth/2-p))) for i,p in enumerate(population)], 3)
+    else:
+        for i in range(np.shape(population)[0]):
+            pygame.draw.lines(disp, THECOLORS[colours[i%8]], False, [(int((x+(displayWidth-gapWidth*2)/N*i)), int(y+(displayHeight-gapWidth/2-p))) for i,p in enumerate(population[i])])
+        if alg.name() == "Genetic Algorithm":
+            pygame.draw.lines(disp, THECOLORS[colours[0]], False, [(int((x+(displayWidth-gapWidth*2)/N*i)), int(y+(displayHeight-gapWidth/2-p))) for i,p in enumerate(population[0])], 5)
+
 
 #Render text
 def disptext(text, x, y):
     t = font.render(text, True, black)
     tRect = t.get_rect()
-    tRect.center = (x/2,y/2)
+    tRect.center = (int(x/2),int(y/2))
     disp.blit(t,tRect)
 
 #Main display loop
 while running:
     ite += 1
-    maxite = 400
+    maxite = 500
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -93,20 +100,22 @@ while running:
 
         ite = 0
         #Uniformly random initialisation of population with fixed start/end point; each algorithm starts with the same population clipped to their respective population size
-        population = alg.initialise(bounds, N, fitness)
-        if np.shape(population) == (N,):
+        population = alg.initialise(bounds, N, fitness, maxite)
+        if alg.name() == "Simulated Annealing":
+            population[0][0], population[-1][0] = startend[0],startend[1]
+        elif alg.name == "CMA-ES":
             population[0] = startend[0]
             population[-1] = startend[1]
         else:
             population[:,0] = startend[0]
             population[:,-1] = startend[1]
-
+    
     #Iterative recombination of population
     population = alg.f(population, fitness, bounds, N, ite, maxite)
 
     #GUI stuff
     disptext(alg.name(), displayWidth,gapWidth*1.5)
-    draw(population)
+    draw(population, ite)
 
     #Percentage accuracy off Global Minima; Evaluates fittest individual after 300 generations
     minima = brachistochrone(displayWidth-gapWidth*2,startend[0]-startend[1])[-1]
