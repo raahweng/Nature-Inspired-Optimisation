@@ -19,9 +19,12 @@ def f(population, fobj, bounds, N, ite, maxite):
             velocity[i][j] = w*velocity[i][j] + cp*rp*(pbest[i][j]-position[i][j]) + cg*rg*(gbest[j]-position[i][j])
         position[i] += velocity[i]
         
-        if fobj(position[i]) < fobj(pbest[i]):
+        pfittest = fobj(pbest[i])
+        pfitness = fobj(position[i])
+        if pfitness < pfittest:
             pbest[i] = position[i]
-            if fobj(pbest[i]) < fobj(gbest):
+            pfittest = pfitness
+            if pfittest < fobj(gbest):
                 gbest = pbest[i]
 
     return position
@@ -30,10 +33,10 @@ def f(population, fobj, bounds, N, ite, maxite):
 def initialise(bounds,N, fobj, maxite):
     global position, velocity, pbest, gbest
 
-    position = np.zeros((psize, N))
-    velocity = np.zeros((psize, N))
-    pbest = np.zeros((psize, N))
-    gbest = np.zeros((N,1))
+    position = np.zeros((psize, N))  #Position vector of each particle
+    velocity = np.zeros((psize, N))  #Velocity vector of each particle
+    pbest = np.zeros((psize, N))  #Individual best position of each particle
+    gbest = np.zeros((N,1))  #Overall best position over generation
 
     for i in range(psize):
         position[i] = np.random.uniform(bounds[0], bounds[1], (1, N))
@@ -48,3 +51,5 @@ def initialise(bounds,N, fobj, maxite):
 def name():
     return "Particle Swarm Optimisation"
 
+def nfe(ite):
+    return 3 * psize * ite

@@ -1,9 +1,9 @@
 import numpy as np
 import random
 
-DElmda = 150
-F = 0.25 ## Differential Weight; Range 0-2; Recommended value 0.8
-CR = 0.55 ## Crossover Rate; Range 0-1; Recommended value 0.9
+DElmda = 100  #Population size
+F = 0.25  # Differential Weight; Range 0-2; Recommended value 0.8
+CR = 0.55  # Crossover Rate; Range 0-1; Recommended value 0.9
 
 #Differential Evolution
 def f(population, fobj, bounds, N, ite, maxite):
@@ -29,8 +29,12 @@ def f(population, fobj, bounds, N, ite, maxite):
     return population
 
 def initialise(bounds,N,fobj, maxite):
+    #Random initialisation of population
     population = np.random.uniform(bounds[0], bounds[1], (DElmda, N))
     return population
 
 def name():
     return "Differential Evolution"
+
+def nfe(ite):
+    return 2 * DElmda * ite

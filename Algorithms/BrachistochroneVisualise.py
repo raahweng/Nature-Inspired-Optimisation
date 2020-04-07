@@ -33,12 +33,12 @@ def fitness(vector):
     for i in range(N-1):
         d = np.sqrt(dx**2 + (vector[i]-vector[i+1])**2)
         a,b = vector[0]-vector[i+1], vector[0]-vector[i]
-        if a >= 0 and b >= 0:
+        if a >= 0 and b >= 0 and vector[i]-vector[i+1] != 0:
             t += d*( np.sqrt(a) - np.sqrt(b))/(vector[i]-vector[i+1])
 
         #Penalise if impossible to slide uphill by number of illegal points
         else:
-            t += (np.sum(a < 0, axis=0) + np.sum(b < 0, axis=0))*100
+            t += (np.sum(a < 0, axis=0) + np.sum(b < 0, axis=0))*100 + 100
     t *= np.sqrt(2/9.81)
     return t
 
@@ -103,7 +103,7 @@ while running:
         population = alg.initialise(bounds, N, fitness, maxite)
         if alg.name() == "Simulated Annealing":
             population[0][0], population[-1][0] = startend[0],startend[1]
-        elif alg.name == "CMA-ES":
+        elif alg.name() == "CMA-ES":
             population[0] = startend[0]
             population[-1] = startend[1]
         else:
@@ -119,6 +119,6 @@ while running:
 
     #Percentage accuracy off Global Minima; Evaluates fittest individual after 300 generations
     minima = brachistochrone(displayWidth-gapWidth*2,startend[0]-startend[1])[-1]
-    disptext("% Error: " + str(round((fittest(population)-minima)/minima*100,3)), displayWidth, displayHeight*2-gapWidth*2)
-
+    disptext("% Error: " + str(round((fittest(population)-minima)/minima*100,3)), displayWidth/2, displayHeight*2-gapWidth*2)
+    disptext("NFE: " + str(alg.nfe(ite)), 3/2 * displayWidth, displayHeight*2-gapWidth*2)
     pygame.display.update()

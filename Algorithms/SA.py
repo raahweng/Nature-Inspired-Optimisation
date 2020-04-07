@@ -39,7 +39,8 @@ def f(population, fobj, bounds, N, ite, maxite):
     
 
 def initialise(bounds,N,fobj,maxite):
-    global xc,fc, frac
+    global xc,fc, frac, t
+    t = t1
     population = np.random.uniform(bounds[0], bounds[1], (N,1))
     xc = population
     fc = fobj(population)
@@ -48,4 +49,7 @@ def initialise(bounds,N,fobj,maxite):
 
 def name():
     return "Simulated Annealing"
+
+def nfe(ite):
+    return cycles * ite
 

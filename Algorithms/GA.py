@@ -1,16 +1,18 @@
 import numpy as np
 import random
 
-GAlmda = 150
-GAmu = 5
-k=2
-MRmax = 0.1
-MRmin = 0.02
+GAlmda = 150  #Population size
+GAmu = 5  #No of parents for crossover
+k=2  #K-point crossover parameter
+#Mutation rate decay parameters
+MR1 = 0.1
+MRn = 0.02
 
 #Genetic Algorithm; samples from Uniform distribution and uses K-point crossover
 def f(population, fobj, bounds, N, ite, maxite):
 
-    MR=MRmax-(MRmax-MRmin)*ite/maxite
+    #Mutation decay
+    MR=MRn-(MR1-MRn)*ite/maxite
 
     #Selection; sort population by fitness
     times = np.array([fobj(i) for i in population])
@@ -44,8 +46,14 @@ def f(population, fobj, bounds, N, ite, maxite):
     return np.array(newpop)
 
 def initialise(bounds,N,fobj, maxite):
+    global MR
+    MR = MR1
+    #Random initialisation of population
     population = np.random.uniform(bounds[0], bounds[1], (GAlmda, N))
     return population
 
 def name():
     return "Genetic Algorithm"
+
+def nfe(ite):
+    return GAlmda * ite
