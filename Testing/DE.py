@@ -2,11 +2,11 @@ import numpy as np
 import random
 
 DElmda = 0  #Population size
-F = 0.25  # Differential Weight; Range 0-2; Recommended value 0.8
-CR = 0.55  # Crossover Rate; Range 0-1; Recommended value 0.9
+F = 0.8  # Differential Weight; Range 0-2; Recommended value 0.8
+CR = 0.9  # Crossover Rate; Range 0-1; Recommended value 0.9
 
 #Differential Evolution
-def f(population, fobj, bounds, N, ite, maxite):
+def f(population, fobj, bounds, N, ite, maxnfe):
 
     for i in range(DElmda):
 
@@ -28,9 +28,9 @@ def f(population, fobj, bounds, N, ite, maxite):
         
     return population
 
-def initialise(bounds,N,fobj, maxite):
+def initialise(bounds,N,fobj, maxnfe):
     global DElmda
-    DElmda = N*10
+    DElmda = 15
     #Random initialisation of population
     population = np.random.uniform(bounds[0], bounds[1], (DElmda, N))
     return population

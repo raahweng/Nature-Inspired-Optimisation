@@ -5,14 +5,14 @@ import math
 es = 0
 popsize = 30
 
-def f(population, fobj, bounds, N, ite, maxite):
+def f(population, fobj, bounds, N, ite, maxnfe):
     global es
     #Use CMA-ES ask-and-tell interface to manually perform one iteration
     population = es.ask()
     es.tell(population, [fobj(x) for x in population])
-    return population
+    return np.array(population)
 
-def initialise(bounds,N,fobj, maxite):
+def initialise(bounds,N,fobj, maxnfe):
     global es
     #Initialise CMA-ES object from library with initial random seed, initial std 10 and bounds to positive real numbers
     population = np.random.uniform(bounds[0], bounds[1], N)

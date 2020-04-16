@@ -11,15 +11,18 @@ t=t1
 deltaE_avg, deltaE = 0,0
 na = 0
 frac = 0
+M1 = 0
+Mn = 1e-5
+M = 0
 
-def f(population, fobj, bounds, N, ite, maxite):
-    global xc,fc,t,na,deltaE_avg,deltaE
+def f(population, fobj, bounds, N, ite, maxnfe):
+    global xc,fc,t,na,deltaE_avg,deltaE, M
 
     if ite == 0:
         xc = population
-
+    M *= (Mn/M1)**(nfe(1)/(maxnfe-1))
     for i in range(cycles):
-        mutant = population + np.random.normal(0,abs(bounds[0]-bounds[1])**0.3,(N,1))
+        mutant = population + np.random.normal(0,M,(N,1))
         fmutant = fobj(mutant)
         deltaE = abs(fmutant-fc)
         accept = False
@@ -38,13 +41,15 @@ def f(population, fobj, bounds, N, ite, maxite):
     return population
     
 
-def initialise(bounds,N,fobj,maxite):
-    global xc,fc, frac, t
+def initialise(bounds,N,fobj,maxnfe):
+    global xc,fc, frac, t, M1, M
     t = t1
     population = np.random.uniform(bounds[0], bounds[1], (N,1))
     xc = population
     fc = fobj(population)
-    frac = (tn/t1)**(1/(maxite-1))
+    frac = (tn/t1)**(nfe(1)/(maxnfe-1))
+    M1 = abs(bounds[0]-bounds[1])
+    M = M1
     return population
 
 def name():

@@ -3,9 +3,9 @@ import math, random, time
 
 nbat=15
 A1 = 0.75
-An = 0.25
+An = 0.01
 r1 = 0.25
-rn = 0.85
+rn = 0.99
 A = A1
 r = r1
 qmin = 0
@@ -14,10 +14,10 @@ q,v, S = 0,0,0
 best,fitness = 0,0
 
 
-def f(population, fobj, bounds, N, ite, maxite):
+def f(population, fobj, bounds, N, ite, maxnfe):
     global best, fitness, q, v, fmin, A, r
-    A *= (An/A1)**(1/(maxite-1))
-    r *= (rn/r1)**(1/(maxite-1))
+    A *= (An/A1)**(nfe(1)/(maxnfe-1))
+    r *= (rn/r1)**(nfe(1)/(maxnfe-1))
     for x in range(15):
         for i in range(nbat):
             q[i] = qmin + (qmax-qmin)*random.random()
@@ -25,7 +25,7 @@ def f(population, fobj, bounds, N, ite, maxite):
             S[i] = population[i] + v[i]
             np.clip(S[i], bounds[0], bounds[1])
             if random.random()>r:
-                S[i] = best + 0.04*np.random.uniform(bounds[0], bounds[1], (1, N))
+                S[i] = best + 0.01*np.random.normal(0, abs(bounds[0]-bounds[1]))
             fnew = fobj(S[i])
             if fnew <= fitness[i] and random.random()<A:
                 population[i] = S[i]
@@ -33,20 +33,14 @@ def f(population, fobj, bounds, N, ite, maxite):
             if fnew <= fmin:
                 best = S[i]
                 fmin = fnew
-        temp = np.where(v>500)
-        for i,j in enumerate(temp[0]):
-            v[j][temp[1][i]] = np.random.uniform(-250, 250)
-        temp = np.where(v<-500)
-        for i,j in enumerate(temp[0]):
-            v[j][temp[1][i]] = np.random.uniform(-250, 250)
     return population
                 
 
-def initialise(bounds,N,fobj,maxite):
+def initialise(bounds,N,fobj,maxnfe):
     global best, fitness, fmin, q, v, S, A, r
     A = A1
     r = r1
-    population = np.random.uniform(bounds[0], bounds[1], (nbat, N))
+    population = np.random.normal(0, abs(bounds[0]-bounds[1]), (nbat, N))
     fitness = [fobj(x) for x in population]
     fmin = min(fitness)
     best = population[fitness.index(fmin)]

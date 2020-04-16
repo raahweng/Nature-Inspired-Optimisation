@@ -6,15 +6,20 @@ GAlmda = 0  #Population size
 GAmu = 0  #No of parents for crossover
 k=2  #K-point crossover parameter
 #Mutation rate decay parameters
-MR1 = 0.5
-MRn = 0.1
-
+MR1 = 0.3
+MRn = 0.01
+MR = 0
+#Mutation magnitude parameters
+M1 = 0
+Mn = 1e-6
+M = 0
 
 #Genetic Algorithm; samples from Uniform distribution and uses K-point crossover
-def f(population, fobj, bounds, N, ite, maxite):
-
+def f(population, fobj, bounds, N, ite, maxnfe):
+    global MR, M
     #Mutation decay
-    MR=MRn-(MR1-MRn)*ite/maxite
+    MR *= (MRn/MR1)**(nfe(1)/(maxnfe-1))
+    M *= (Mn/M1)**(nfe(1)/(maxnfe-1))
 
     #Selection; sort population by fitness
     fitnesses = np.array([fobj(i) for i in population])
@@ -45,22 +50,24 @@ def f(population, fobj, bounds, N, ite, maxite):
         #Mutation; 1/N chance of randomly assigning a value to each point besides start and end       
         for j in range(N):
             r = random.uniform(0,1)
-            if r < MR and j > 0 and j < N-1:
-                temp[j] += np.random.normal(0,np.sqrt(abs(bounds[0]-bounds[1])))
+            if r < MR:
+                temp[j] += np.random.normal(0,M)
 
         newpop.append(temp)
     return np.array(newpop)
 
-def initialise(bounds,N,fobj, maxite):
-    global MR, GAlmda, GAmu, MR1, MRn
+def initialise(bounds,N,fobj, maxnfe):
+    global MR, GAlmda, GAmu, MR1, MRn, M, M1
     GAlmda = N*10 
     GAmu = np.floor(0.25 * GAlmda)
     #Random initialisation of population
     population = np.random.uniform(bounds[0], bounds[1], (GAlmda, N))
     if N == 2:
-        MR1 = 0.9
-        MRn = 0.6
+        MR1 = 1
+        MRn = 0.75
     MR = MR1
+    M1 = abs(bounds[0]-bounds[1])
+    M = M1
     return population
 
 def name():
