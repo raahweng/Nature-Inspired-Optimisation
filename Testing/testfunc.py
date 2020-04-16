@@ -1,21 +1,6 @@
 import sys, random, time, cma, importlib
 import numpy as np
 
-bounds = {
-    "sphere": [-5.12,5.12],
-    "bartelsconn": [500,500],
-    "dropwave": [-5.12,5.12],
-    "easom": [-100,100],
-    "rotatedhe": [-65.536, 65.536],
-    "ackley": [-32.768, 32.768],
-    "schwefel": [-500,500],
-    "rastrigin": [-5.12,5.12],
-    "rosenbrock": [-5,10],
-    "zakharov": [-5,10],
-    "michalewicz": [0, np.pi,
-    "step": [-100,100]
-    }
-
 
 def sphere(x):
     return np.sum(x**2)
@@ -52,3 +37,40 @@ def michalewicz(x):
 
 def step(x):
     return np.sum(np.floor(np.abs(x)))
+
+
+bounds = {
+    "sphere": [-5.12,5.12],
+    "bartelsconn": [-500,500],
+    "dropwave": [-5.12,5.12],
+    "easom": [-100,100],
+    "rotatedhe": [-65.536, 65.536],
+    "ackley": [-32.768, 32.768],
+    "schwefel": [-500,500],
+    "rastrigin": [-5.12,5.12],
+    "rosenbrock": [-5,10],
+    "zakharov": [-5,10],
+    "michalewicz": [0, np.pi],
+    "step": [-100,100]
+    }
+
+minima = {
+    "sphere": 0,
+    "bartelsconn": 1,
+    "dropwave": -1,
+    "easom": -1,
+    "rotatedhe": 0,
+    "ackley": 0,
+    "schwefel": 0,
+    "rastrigin": 0,
+    "rosenbrock": 0,
+    "zakharov": 0,
+    "michalewicz": -9.6601517156,
+    "step": 0
+    }
+
+def funcbounds():
+    return bounds
+
+def fminima():
+    return minima
