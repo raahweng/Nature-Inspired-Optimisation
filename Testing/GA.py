@@ -52,7 +52,7 @@ def f(population, fobj, bounds, N, ite, maxnfe):
             r = random.uniform(0,1)
             if r < MR:
                 temp[j] += np.random.normal(0,M)
-                np.clip(temp[j], bounds[0], bounds[1])
+                temp[j] = np.clip(temp[j], bounds[0], bounds[1])
 
         newpop.append(temp)
     return np.array(newpop)

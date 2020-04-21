@@ -18,7 +18,7 @@ def f(population, fobj, bounds, N, ite, maxnfe):
             rp, rg = random.random(), random.random()
             velocity[i][j] = w*velocity[i][j] + cp*rp*(pbest[i][j]-position[i][j]) + cg*rg*(gbest[j]-position[i][j])
         position[i] += velocity[i]
-        np.clip(position[i], bounds[0], bounds[1])
+        position[i] = np.clip(position[i], bounds[0], bounds[1])
         pfittest = fobj(pbest[i])
         pfitness = fobj(position[i])
         if pfitness < pfittest:

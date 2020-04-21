@@ -2,7 +2,7 @@ import numpy as np
 import math, random, time
 
 
-p1 = 0.95
+p1 = 0.98
 #pn = 1e-3
 xc, fc = 0,0
 t1 = -1/math.log(p1)
@@ -14,6 +14,8 @@ frac = 0
 M1 = 0
 Mn = 1e-2
 M = 0
+cycles = 1
+check = False
 
 def f(population, fobj, bounds, N, ite, maxnfe):
     global xc,fc,t,na,deltaE_avg,deltaE, M
@@ -21,6 +23,9 @@ def f(population, fobj, bounds, N, ite, maxnfe):
         xc = population
     M *= (Mn/M1)**(nfe(1)/(maxnfe-1))
     mutant = population + np.random.normal(0,M,(N,1))
+    mutant = np.clip(mutant, bounds[0], bounds[1])
+    if check:
+        mutant = np.transpose(mutant)
     fmutant = fobj(mutant)
     deltaE = abs(fmutant-fc)
     accept = False
@@ -36,6 +41,8 @@ def f(population, fobj, bounds, N, ite, maxnfe):
         deltaE_avg = (deltaE_avg*(na-1)+ deltaE)/na
     population = xc
     t *= frac
+    if check:
+        return np.transpose(population)
     return population
     
 
@@ -48,6 +55,9 @@ def initialise(bounds,N,fobj,maxnfe):
     frac = (tn/t1)**(nfe(1)/(maxnfe-1))
     M1 = abs(bounds[0]-bounds[1])
     M = M1
+    if bounds[1] == np.pi:
+        check = True
+        population = np.transpose(population)
     return population
 
 def name():

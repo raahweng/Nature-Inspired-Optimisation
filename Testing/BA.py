@@ -16,11 +16,15 @@ def f(population, fobj, bounds, N, ite, maxnfe):
     q = (qmin + (qmax-qmin))*np.random.random((nbat, N))
     v += (population-best)*q
     S += v
+    S = np.clip(S, bounds[0], bounds[1])
     for i in range(nbat):
         if random.random()>r[i]:
             S[i] = best + np.random.uniform(-1, 1, (1,N))*np.sum(A)/nbat
+            S[i] = np.clip(S[i], bounds[0], bounds[1])
     for i in range(nbat):
         fnew = fobj(S[i])
+        if fnew < 0:
+            print("oog")
         if fnew <= fitness[i] and random.random()<A[i]:
             population[i] = S[i]
             fitness[i] = fnew

@@ -2,12 +2,13 @@ import numpy as np
 import random
 
 DElmda = 0  #Population size
-F = 0.8  # Differential Weight; Range 0-2; Recommended value 0.8
-CR = 0.9  # Crossover Rate; Range 0-1; Recommended value 0.9
+Frange = (0.5,1)  # Differential Weight; Range 0-2; Dithering selects random F from range each generation
+CR = 0.7  # Crossover Rate; Range 0-1; Recommended value 0.9
 
-#Differential Evolution
+#Differential Evolution rand1bin
 def f(population, fobj, bounds, N, ite, maxnfe):
 
+    F = random.uniform(Frange[0], Frange[1])
     for i in range(DElmda):
 
         #Select 3 individuals from population; Mutate one by the weighted difference of the other two; Clip mutant to constraints
@@ -15,7 +16,7 @@ def f(population, fobj, bounds, N, ite, maxnfe):
         sample.remove(i)
         abc = random.sample(sample, 3)
         mutant = population[abc[0]] + F * (population[abc[1]]-population[abc[2]])
-        np.clip(mutant, bounds[0], bounds[1])
+        mutant = np.clip(mutant, bounds[0], bounds[1])
 
         #Mutate each value in the mutant to the individual's value according to Crossover Rate
         for j in range(N):

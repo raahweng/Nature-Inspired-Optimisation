@@ -59,13 +59,14 @@ minima = {
     "bartelsconn": 1,
     "dropwave": -1,
     "easom": -1,
-    "rotatedhe": 0,
-    "ackley": 0,
+    "michalewicz": -4.6876581791, #	-1.8013034101, -4.6876581791, -9.6601517156
     "schwefel": 0,
     "rastrigin": 0,
     "rosenbrock": 0,
+    "sphere10": 0,
+    "rotatedhe": 0,
+    "ackley": 0,
     "zakharov": 0,
-    "michalewicz": -4.6876581791, #	-1.8013034101, -4.6876581791, -9.6601517156
     "step": 0
     }
 

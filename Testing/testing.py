@@ -1,4 +1,4 @@
-import sys, random, time, cma, importlib, matplotlib, pickle
+import sys, random, time, cma, importlib, matplotlib, pickle, math
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -46,9 +46,9 @@ def test(alg, fobj, fobjstr, N, maxnfe, tol):
 
 # counter = 0
 # for i in range(100):
-#     hist = test(BA, t.dropwave, "dropwave", 5, 10000, 1e-5)
+#     hist = test(CMAES, t.dropwave, "dropwave", 2, 10000, 1e-3)
 #     print(abs(hist[-1] - minima["dropwave"]))
-#     if len(hist) >= 10000/BA.nfe(1)+1:
+#     if len(hist) >= 10000/CMAES.nfe(1)+1:
 #         counter += 1
 #     else:
 #         pass
@@ -57,9 +57,12 @@ def test(alg, fobj, fobjstr, N, maxnfe, tol):
 #test(SA, t.sphere, "sphere", 10, 10000, 1e-3)
 
 # import scipy.optimize
-# alg = scipy.optimize.minimize(t.michalewicz, np.random.uniform(bounds["michalewicz"][0], bounds["michalewicz"][1], (2,1)), method="BFGS")
+# alg = scipy.optimize.basinhopping(t.michalewicz, np.random.uniform(bounds["michalewicz"][0], bounds["michalewicz"][1], (5,1)))
+# alg = scipy.optimize.shgo(t.michalewicz, [(bounds["michalewicz"][0], bounds["michalewicz"][1]) for i in range(5)])
+# alg = scipy.optimize.dual_annealing(t.michalewicz, [(bounds["michalewicz"][0], bounds["michalewicz"][1]) for i in range(5)])
 # sol = alg.x
 # print(alg)
+
 
 
 
@@ -73,16 +76,19 @@ def testadd(alg, fobj, fobjstr, N, maxnfe, tol):
         nfe = 0
         nfeinc = alg.nfe(1)
         ite = 0
+        success = False
+        nfesuccess = 0
         while True:
             if nfe >= maxnfe:
                 break
-            if abs(fit - minima[fobjstr]) < tol:
-                break
+            if abs(fit - minima[fobjstr]) < tol and success == False:
+                success = True
+                nfesuccess = nfe
             population = alg.f(population, fobj, bounds[fobjstr], N, ite, maxnfe)
             ite += 1
             nfe += nfeinc
             fit = fittest(population, fobj)
-        trials.append([nfe, start, fit])
+        trials.append([nfesuccess, success, start, fit])
     return trials
 
     
@@ -92,13 +98,13 @@ def testset(alg, filename):
     data.append(testadd(alg, t.bartelsconn, "bartelsconn", 2, 10000, 1e-3))
     data.append(testadd(alg, t.dropwave, "dropwave", 2, 10000, 1e-3))
     data.append(testadd(alg, t.easom, "easom", 2, 10000, 1e-3))
-    data.append(testadd(alg, t.michalewicz, "michalewicz", 2, 10000, 1e-3))
+    data.append(testadd(alg, t.michalewicz, "michalewicz", 5, 10000, 1e-3))
     data.append(testadd(alg, t.schwefel, "schwefel", 2, 10000, 1e-3))
     data.append(testadd(alg, t.rastrigin, "rastrigin", 5, 10000, 1e-3))
+    data.append(testadd(alg, t.rosenbrock, "rosenbrock", 5, 10000, 1e-3))
     data.append(testadd(alg, t.sphere, "sphere", 10, 10000, 1e-3))
     data.append(testadd(alg, t.rotatedhe, "rotatedhe", 10, 10000, 1e-3))
     data.append(testadd(alg, t.ackley, "ackley", 10, 10000, 1e-3))
-    data.append(testadd(alg, t.rosenbrock, "rosenbrock", 10, 10000, 1e-3))
     data.append(testadd(alg, t.zakharov, "zakharov", 10, 10000, 1e-3))
     data.append(testadd(alg, t.step, "step", 10, 10000, 1e-3))
     pickle.dump(data, open( filename, "wb" ))
@@ -110,8 +116,26 @@ testset(SA, "SA.p")
 testset(PSO, "PSO.p")
 testset(BA, "BA.p")
 
-# for i in pickle.load( open( "BA.p", "rb" )):
-#     print(i)
+
+# for i, j in enumerate(pickle.load( open( "CMAES.p", "rb" ))):
+#     accuracy = 0
+#     counter = 0
+#     for k in j:
+#         if k[0] < 10000:
+#             counter += 1
+#             if k[2]-list(minima.values())[i] == 0:
+#                 accuracy += math.log10(sys.float_info.min)
+#             else:
+#                 try:
+#                     accuracy += math.log10(abs(k[2]-list(minima.values())[i])) - math.log10(abs(k[1]-list(minima.values())[i]))
+#                 except:
+#                     print("HELP")
+#                     print(list(minima.values())[i])
+#     if counter > 0:
+#         accuracy /= counter
+#     else:
+#         accuracy = "N/A"
+#     print(accuracy)
 
 
 
