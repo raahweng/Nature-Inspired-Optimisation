@@ -9,6 +9,8 @@ CMAES = importlib.import_module("CMAES")
 PSO = importlib.import_module("PSO")
 SA = importlib.import_module("SA")
 BA = importlib.import_module("BA")
+basinhop = importlib.import_module("basinhop")
+dualanneal = importlib.import_module("dualanneal")
 t = importlib.import_module("testfunc")
 bounds = t.funcbounds()
 minima = t.fminima()
@@ -40,32 +42,19 @@ def test(alg, fobj, fobjstr, N, maxnfe, tol):
         nfe += nfeinc
         fit = fittest(population, fobj)
         hist.append(fit)
-    #plt.plot(range(0,nfe+nfeinc, nfeinc), hist)
-    #plt.show()
+    plt.plot(range(0,nfe+nfeinc, nfeinc), hist)
+    plt.show()
     return hist
 
-# counter = 0
-# for i in range(100):
-#     hist = test(CMAES, t.dropwave, "dropwave", 2, 10000, 1e-3)
-#     print(abs(hist[-1] - minima["dropwave"]))
-#     if len(hist) >= 10000/CMAES.nfe(1)+1:
-#         counter += 1
-#     else:
-#         pass
-# print(counter)
-
-#test(SA, t.sphere, "sphere", 10, 10000, 1e-3)
-
-# import scipy.optimize
-# alg = scipy.optimize.basinhopping(t.michalewicz, np.random.uniform(bounds["michalewicz"][0], bounds["michalewicz"][1], (5,1)))
-# alg = scipy.optimize.shgo(t.michalewicz, [(bounds["michalewicz"][0], bounds["michalewicz"][1]) for i in range(5)])
-# alg = scipy.optimize.dual_annealing(t.michalewicz, [(bounds["michalewicz"][0], bounds["michalewicz"][1]) for i in range(5)])
-# sol = alg.x
-# print(alg)
-
-
-
-
+counter = 0
+for i in range(100):
+    hist = test(SA, t.michalewicz, "michalewicz", 5, 10000, 1e-3)
+    print(hist[-1])
+    if len(hist) >= 10000/SA.nfe(1)+1:
+        counter += 1
+    else:
+        pass
+print(counter)
 
 def testadd(alg, fobj, fobjstr, N, maxnfe, tol):
     trials = []
@@ -109,25 +98,39 @@ def testset(alg, filename):
     data.append(testadd(alg, t.step, "step", 10, 10000, 1e-3))
     pickle.dump(data, open( filename, "wb" ))
 
-testset(GA, "GA.p")
-testset(DE, "DE.p")
-testset(CMAES, "CMAES.p")
-testset(SA, "SA.p")
-testset(PSO, "PSO.p")
-testset(BA, "BA.p")
+# testset(GA, "GA.p")
+# testset(DE, "DE.p")
+# testset(CMAES, "CMAES.p")
+# testset(SA, "SA.p")
+# testset(PSO, "PSO.p")
+# testset(BA, "BA.p")
 
 
-# for i, j in enumerate(pickle.load( open( "CMAES.p", "rb" ))):
+# for i in pickle.load( open( "BA.p", "rb" )):
+#     success = 0
+#     nfe = 0
+#     for j in i:
+#         if j[1] == True:
+#             success += 1
+#             nfe += j[0]
+#     if success > 0:
+#         nfe /= success
+#         print(nfe)
+#     else:
+#         print("N/A")
+    
+
+# for i, j in enumerate(pickle.load( open( "BA.p", "rb" ))):
 #     accuracy = 0
 #     counter = 0
 #     for k in j:
-#         if k[0] < 10000:
+#         if k[1] == True:
 #             counter += 1
-#             if k[2]-list(minima.values())[i] == 0:
+#             if k[3]-list(minima.values())[i] == 0:
 #                 accuracy += math.log10(sys.float_info.min)
-#             else:
+#             else:sys
 #                 try:
-#                     accuracy += math.log10(abs(k[2]-list(minima.values())[i])) - math.log10(abs(k[1]-list(minima.values())[i]))
+#                     accuracy += math.log10(abs(k[3]-list(minima.values())[i])) - math.log10(abs(k[2]-list(minima.values())[i]))
 #                 except:
 #                     print("HELP")
 #                     print(list(minima.values())[i])
@@ -138,4 +141,92 @@ testset(BA, "BA.p")
 #     print(accuracy)
 
 
+
+def bhtest(fobj, fobjstr, N, maxnfe=10000, tol=1e-3):
+    results = []
+    for i in range(100):
+        start = np.random.uniform(bounds[fobjstr][0], bounds[fobjstr][1], (N,1))
+        alg = basinhop.basinhopping(fobj, start, 100, 1, 0.5, {"bounds":[(bounds[fobjstr][0], bounds[fobjstr][1]) for i in range(N)], "tol":sys.float_info.min}, minima[fobjstr])
+        results.append([alg.nfesuccess, alg.success, fobj(start), alg.fun, alg.nfev])
+    return results
+
+def bhtestset():
+    data = []
+    data.append(bhtest(t.sphere, "sphere", 2))
+    data.append(bhtest(t.bartelsconn, "bartelsconn", 2))
+    data.append(bhtest(t.dropwave, "dropwave", 2))
+    data.append(bhtest(t.easom, "easom", 2))
+    data.append(bhtest(t.michalewicz, "michalewicz", 5))
+    data.append(bhtest(t.schwefel, "schwefel", 5))
+    data.append(bhtest(t.rastrigin, "rastrigin", 5))
+    data.append(bhtest(t.rosenbrock, "rosenbrock", 5))
+    data.append(bhtest(t.sphere, "sphere", 10))
+    data.append(bhtest(t.rotatedhe, "rotatedhe", 10))
+    data.append(bhtest(t.ackley, "ackley", 10))
+    data.append(bhtest(t.zakharov, "zakharov", 10))
+    data.append(bhtest(t.step, "step", 10))
+    pickle.dump(data, open( "basinhop.p", "wb" ))
+
+
+def datest(fobj, fobjstr, N, maxnfe=10000, tol=1e-3):
+    results = []
+    for i in range(100):
+        start = np.random.uniform(bounds[fobjstr][0], bounds[fobjstr][1], N)
+        alg = dualanneal.dual_annealing(fobj, [(bounds[fobjstr][0], bounds[fobjstr][1]) for i in range(N)], (), 10000, {"tol":sys.float_info.min}, 5230, 2e-05, 2.62, -5, 10000, None, False, None, start, minima[fobjstr])
+        results.append([alg.nfevsuccess, alg.success, fobj(start), alg.fun, alg.nfev])
+    return results
+
+
+def datestset():
+    data = []
+    data.append(datest(t.sphere, "sphere", 2))
+    data.append(datest(t.bartelsconn, "bartelsconn", 2))
+    data.append(datest(t.dropwave, "dropwave", 2))
+    data.append(datest(t.easom, "easom", 2))
+    data.append(datest(t.michalewicz, "michalewicz", 5))
+    data.append(datest(t.schwefel, "schwefel", 5))
+    data.append(datest(t.rastrigin, "rastrigin", 5))
+    data.append(datest(t.rosenbrock, "rosenbrock", 5))
+    data.append(datest(t.sphere, "sphere", 10))
+    data.append(datest(t.rotatedhe, "rotatedhe", 10))
+    data.append(datest(t.ackley, "ackley", 10))
+    data.append(datest(t.zakharov, "zakharov", 10))
+    data.append(datest(t.step, "step", 10))
+    pickle.dump(data, open( "dualanneal.p", "wb" ))
+
+# bhtestset()
+# datestset()
+
+
+# for i in pickle.load( open( "dualanneal.p", "rb" )):
+#     success = 0
+#     nfe = 0
+#     for j in i:
+#         if j[1] == True:
+#             success += 1
+#             nfe += j[0]
+#     if success > 0:
+#         nfe /= success
+#         print(success, nfe)
+#     else:
+#         print("N/A")
+# for i, j in enumerate(pickle.load( open( "dualanneal.p", "rb" ))):
+#     accuracy = 0
+#     counter = 0
+#     for k in j:
+#         if k[1] == True:
+#             counter += 1
+#             if k[3]-list(minima.values())[i] == 0:
+#                 accuracy += math.log10(sys.float_info.min)
+#             else:
+#                 try:
+#                     accuracy += math.log10(abs(k[3]-list(minima.values())[i])) - math.log10(abs(k[2]-list(minima.values())[i]))
+#                 except:
+#                     print("HELP")
+#                     print(list(minima.values())[i])
+#     if counter > 0:
+#         accuracy /= counter
+#     else:
+#         accuracy = "N/A"
+#     print(accuracy)
 

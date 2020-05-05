@@ -23,8 +23,6 @@ def f(population, fobj, bounds, N, ite, maxnfe):
             S[i] = np.clip(S[i], bounds[0], bounds[1])
     for i in range(nbat):
         fnew = fobj(S[i])
-        if fnew < 0:
-            print("oog")
         if fnew <= fitness[i] and random.random()<A[i]:
             population[i] = S[i]
             fitness[i] = fnew
