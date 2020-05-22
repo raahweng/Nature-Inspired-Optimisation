@@ -2,7 +2,7 @@
 
 This project is an offshoot of my Extended Project Qualification "To what extent does an inspiration from Nature result in the creation of an effective Optimisation Algorithm?"
 
-The code BrachistochroneVisualise when executed prompts the user which algorithm they would like to use, after which a pygame GUI shows the algorithm iteratively solving the Brachistochrone problem for 500 iterations.
+The code BrachistochroneVisualise.py when executed prompts the user which algorithm they would like to use, after which a pygame GUI shows the algorithm iteratively solving the Brachistochrone problem for 500 iterations.
 
 ### Prerequisites
 
@@ -24,49 +24,7 @@ The algorithms optimise a function that takes in a N-dimensional vector containi
 
 ### Algorithms
 
-I attach a in-depth review of my implementations of these algorithms
+I attach a in-depth review of my implementations of these algorithms and how they work, itself an excerpt from my EPQ dissertation. Note that the implementation described in the document has been adapted for use to this specific problem, but the vast majority of information is applicable.
 
-[Algorithms Document](https://gist.github.com/PurpleBooth/b24679402957c63ec426)
-
-### And coding style tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
-
-## Deployment
-
-Add additional notes about how to deploy this on a live system
-
-## Built With
-
-* [Dropwizard](http://www.dropwizard.io/1.0.2/docs/) - The web framework used
-* [Maven](https://maven.apache.org/) - Dependency Management
-* [ROME](https://rometools.github.io/rome/) - Used to generate RSS Feeds
-
-## Contributing
-
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us.
-
-## Versioning
-
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
-
-## Authors
-
-* **Billie Thompson** - *Initial work* - [PurpleBooth](https://github.com/PurpleBooth)
-
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-* Inspiration
-* etc
+[Algorithms Document](https://github.com/raahweng/Nature-Inspired-Optimisation/blob/master/Brachistochrone/Algorithms.docx)
 
