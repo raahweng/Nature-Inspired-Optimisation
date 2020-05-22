@@ -6,7 +6,7 @@ The code BrachistochroneVisualise when executed prompts the user which algorithm
 
 ### Prerequisites
 
-The code was programmed in Python 3.8.0, and uses the external libraries: NumPy, SciPy, Pygame and cma. Once Python is installed, the following script in command prompt administrator will download the relevant libraries:
+The code was programmed in Python 3.8.0, and uses the external libraries: NumPy, SciPy, Pygame and cma. Once Python is installed, the following script in Adminstrator Command Prompt will download the relevant libraries:
 
 ```
 pip install numpy, scipy, pygame, cma
@@ -16,7 +16,7 @@ pip install numpy, scipy, pygame, cma
 
 The Brachistochrone Problem, posed by Bernouilli in 1696, essentially asks the question "What is the shape of the curve which a mass slides from point A to point B in the least time?" A helpful animation on Wikipedia illustrates the solution to this problem:
 
-(/)
+(/Brachistochrone/Brachistochrone.gif)
 
 
 ### Break down into end to end tests
