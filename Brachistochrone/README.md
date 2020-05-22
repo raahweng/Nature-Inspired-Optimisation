@@ -24,7 +24,7 @@ The algorithms optimise a function that takes in a N-dimensional vector containi
 
 ## Algorithms
 
-I attach a in-depth review of my implementations of these algorithms and how they work, itself an excerpt from my EPQ dissertation. Note that the implementation described in the document has been adapted for use to this specific problem, but the vast majority of information is applicable.
+I attach a in-depth review of my implementations of these algorithms and how they work, itself an excerpt from my EPQ dissertation that discusses their applications in my main project, involving the benchmarking of these algorithms. Note that the implementation described in the document has been adapted for use to this specific problem, but the vast majority of information is applicable.
 
 [Algorithms Document](https://github.com/raahweng/Nature-Inspired-Optimisation/blob/master/Brachistochrone/Algorithms.docx)
 
