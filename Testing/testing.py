@@ -11,6 +11,7 @@ SA = importlib.import_module("SA")
 BA = importlib.import_module("BA")
 basinhop = importlib.import_module("basinhop")
 dualanneal = importlib.import_module("dualanneal")
+ampgo = importlib.import_module("ampgo")
 t = importlib.import_module("testfunc")
 bounds = t.funcbounds()
 minima = t.fminima()
@@ -45,16 +46,6 @@ def test(alg, fobj, fobjstr, N, maxnfe, tol):
     plt.plot(range(0,nfe+nfeinc, nfeinc), hist)
     plt.show()
     return hist
-
-counter = 0
-for i in range(100):
-    hist = test(SA, t.michalewicz, "michalewicz", 5, 10000, 1e-3)
-    print(hist[-1])
-    if len(hist) >= 10000/SA.nfe(1)+1:
-        counter += 1
-    else:
-        pass
-print(counter)
 
 def testadd(alg, fobj, fobjstr, N, maxnfe, tol):
     trials = []
@@ -230,3 +221,67 @@ def datestset():
 #         accuracy = "N/A"
 #     print(accuracy)
 
+
+def ampgotest(fobj, fobjstr, n):
+    results = []
+    for i in range(100):
+        x0 = np.random.uniform(bounds[fobjstr][0],bounds[fobjstr][1],(n,1))
+        bound = [(bounds[fobjstr][0],bounds[fobjstr][1]) for i in range(n)]
+        xf, yf, fun_evals, msg, tt,nfesuccess,succ = ampgo.AMPGO(fobj, x0, (), "L-BFGS-B", None, bound, 10000, 1000, 5, 1e-5, 0.02, 0.01 ,5, 'oldest', minima[fobjstr], None)
+        results.append([nfesuccess, succ, x0, yf])
+    return results
+
+def ampgotestset():
+    data = []
+    data.append(ampgotest(t.sphere, "sphere", 2))
+    data.append(ampgotest(t.bartelsconn, "bartelsconn", 2))
+    data.append(ampgotest(t.dropwave, "dropwave", 2))
+    data.append(ampgotest(t.easom, "easom", 2))
+    data.append(ampgotest(t.michalewicz, "michalewicz", 5))
+    data.append(ampgotest(t.schwefel, "schwefel", 5))
+    data.append(ampgotest(t.rastrigin, "rastrigin", 5))
+    data.append(ampgotest(t.rosenbrock, "rosenbrock", 5))
+    data.append(ampgotest(t.sphere, "sphere", 10))
+    data.append(ampgotest(t.rotatedhe, "rotatedhe", 10))
+    data.append(ampgotest(t.ackley, "ackley", 10))
+    data.append(ampgotest(t.zakharov, "zakharov", 10))
+    data.append(ampgotest(t.step, "step", 10))
+    pickle.dump(data, open( "ampgo.p", "wb" ))
+
+# for i, j in enumerate(pickle.load( open( "ampgo.p", "rb" ))):
+#     accuracy = 0
+#     counter = 0
+#     for k in j:
+#         if k[1] == True:
+#             counter += 1
+#             if k[3]-list(minima.values())[i] == 0:
+#                 accuracy += math.log10(sys.float_info.min)
+#             else:
+#                 try:
+#                     accuracy += math.log10(abs(k[3]-list(minima.values())[i])) - math.log10(abs(k[2]-list(minima.values())[i]))
+#                 except:
+#                     print("HELP")
+#                     print(list(minima.values())[i])
+#     if counter > 0:
+#         accuracy /= counter
+#     else:
+#         accuracy = "N/A"
+#     print(accuracy)
+
+
+index = 12
+accuracy = 0
+counter = 0
+nfe = 0
+for c, i in enumerate(pickle.load( open( "ampgo.p", "rb" ))[index]):
+    if i[1] == True:
+        counter += 1
+        nfe += i[0]
+        start = t.step(i[2])
+        if i[3]-list(minima.values())[index] == 0:
+            accuracy += math.log10(sys.float_info.min)
+        else:
+            accuracy += math.log10(abs(i[3]-list(minima.values())[index])) - math.log10(abs(start-list(minima.values())[index]))
+print(counter)
+print(nfe/counter)
+print(accuracy/counter)

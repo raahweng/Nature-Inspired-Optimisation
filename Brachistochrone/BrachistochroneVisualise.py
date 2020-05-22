@@ -3,7 +3,7 @@ from scipy.optimize import newton
 import numpy as np
 from pygame.color import *
 
-inp = input("Enter Algorithm ")
+inp = input("Enter Algorithm (GA, DE, CMAES, PSO, BA, SA): ")
 alg = importlib.import_module(inp)
 
 #Pygame variables

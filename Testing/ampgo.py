@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 
-import numpy
+import numpy, pickle
 
 OPENOPT = SCIPY = True
 
@@ -190,7 +190,7 @@ def AMPGO(objfun, x0, args=(), local='L-BFGS-B', local_opts=None, bounds=None, m
         if maxfunevals <= 0:
             if disp > 0:
                 print('='*72)
-            return best_x, best_f, evaluations, 'Maximum number of function evaluations exceeded', (all_tunnel, success_tunnel)
+            return best_x, best_f, evaluations, 'Maximum number of global iterations exceeded', (all_tunnel, success_tunnel), nfesuccess, succ
 
         tabulist = drop_tabu_points(xf, tabulist, tabulistsize, tabustrategy)
         tabulist.append(xf)
@@ -337,95 +337,4 @@ def inverse_tunnel(xtf, ytf, aspiration, tabulist):
 
 
 
-def sphere(x):
-    return numpy.sum(x**2)
 
-def bartelsconn(x):
-    return abs(x[0]**2 + x[1]**2 + x[0]*x[1]) + abs(numpy.sin(x[0])) + abs(numpy.cos(x[1]))
-
-def dropwave(x):
-    return -(1 + numpy.cos(12 * numpy.sqrt(x[0]**2 + x[1]**2))) / (0.5 * (x[0]**2 + x[1]**2) + 2)
-
-def easom(x):
-    return -numpy.cos(x[0])*numpy.cos(x[1]) * numpy.exp(-(x[0]-numpy.pi)**2 -(x[1]-numpy.pi)**2)
-
-def rotatedhe(x):
-    return sum([(numpy.shape(x)[0]-j)*k for j,k in enumerate(x**2)])
-
-def ackley(x):
-    return -20 * numpy.exp( -0.2* numpy.sqrt( numpy.sum(x**2)/numpy.shape(x)[0] )) - numpy.exp( numpy.sum( numpy.cos(2*numpy.pi*x)) / numpy.shape(x)[0] ) + 20 + numpy.exp(1)
-
-def schwefel(x):
-    return 418.982887272433799807913601398*numpy.shape(x)[0] - numpy.sum(x*numpy.sin(numpy.sqrt(numpy.abs(x))))
-
-def rastrigin(x):
-    return 10*numpy.shape(x)[0] + numpy.sum(x**2 - 10*numpy.cos(2*numpy.pi*x))
-
-def rosenbrock(x):
-    return numpy.sum(100*(x[1:]-x[:-1]**2)**2 + (1-x[:-1])**2)
-
-def zakharov(x):
-    return numpy.sum(x**2) + numpy.sum(0.5 * x * numpy.arange(1,numpy.shape(x)[0]+1))**2 + numpy.sum(0.5 * x * numpy.arange(1,numpy.shape(x)[0]+1))**4
-
-def michalewicz(x):
-    return -numpy.sum( numpy.sin(x) * numpy.sin( (numpy.arange(1,numpy.shape(x)[0]+1) * (x**2)) / numpy.pi ) ** (2*10) )
-
-def step(x):
-    return numpy.sum(numpy.floor(numpy.abs(x)))
-
-
-bounds = {
-    "sphere": [-5.12,5.12],
-    "bartelsconn": [-500,500],
-    "dropwave": [-5.12,5.12],
-    "easom": [-100,100],
-    "rotatedhe": [-65.536, 65.536],
-    "ackley": [-32.768, 32.768],
-    "schwefel": [-500,500],
-    "rastrigin": [-5.12,5.12],
-    "rosenbrock": [-5,10],
-    "zakharov": [-5,10],
-    "michalewicz": [0, numpy.pi],
-    "step": [-100,100]
-    }
-minima = {
-    "sphere": 0,
-    "bartelsconn": 1,
-    "dropwave": -1,
-    "easom": -1,
-    "michalewicz": -4.6876581791, #	-1.8013034101, -4.6876581791, -9.6601517156
-    "schwefel": 0,
-    "rastrigin": 0,
-    "rosenbrock": 0,
-    "sphere10": 0,
-    "rotatedhe": 0,
-    "ackley": 0,
-    "zakharov": 0,
-    "step": 0
-    }
-
-def test(fobj, fobjstr, n):
-    results = []
-    for i in range(5):
-        x0 = numpy.random.uniform(bounds[fobjstr][0],bounds[fobjstr][1],(n,1))
-        bound = [(bounds[fobjstr][0],bounds[fobjstr][1]) for i in range(n)]
-        xf, yf, fun_evals, msg, tt,nfesuccess,succ = AMPGO(fobj, x0, (), "L-BFGS-B", None, bound, 10000, 1000, 5, 1e-5, 0.02, 0.01 ,5, 'oldest', minima[fobjstr], None)
-        results.append([nfesuccess, succ, x0, yf])
-    return results
-
-def bhtestset():
-    data = []
-    data.append(test(sphere, "sphere", 2))
-    data.append(test(bartelsconn, "bartelsconn", 2))
-    data.append(test(dropwave, "dropwave", 2))
-    data.append(test(easom, "easom", 2))
-    data.appendtest(michalewicz, "michalewicz", 5))
-    data.append(test(schwefel, "schwefel", 5))
-    data.append(test(rastrigin, "rastrigin", 5))
-    data.append(test(rosenbrock, "rosenbrock", 5))
-    data.append(test(sphere, "sphere", 10))
-    data.append(test(rotatedhe, "rotatedhe", 10))
-    data.append(test(ackley, "ackley", 10))
-    data.append(test(zakharov, "zakharov", 10))
-    data.append(test(step, "step", 10))
-    pickle.dump(data, open( "ampgo.p", "wb" ))

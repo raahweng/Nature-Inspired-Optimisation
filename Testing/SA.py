@@ -53,7 +53,7 @@ def initialise(bounds,N,fobj,maxnfe):
         population = np.transpose(population)
     xc = population
     fc = fobj(population)
-    frac = (tn/t1)**(nfe(1)*ite/(maxnfe-1))
+    frac = (tn/t1)**(nfe(1)/(maxnfe-1))
     M1 = abs(bounds[0]-bounds[1])*1.5
     M = M1
     return population
