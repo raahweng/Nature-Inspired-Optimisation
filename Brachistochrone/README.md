@@ -2,7 +2,9 @@
 
 This project is an offshoot of my Extended Project Qualification "To what extent does an inspiration from Nature result in the creation of an effective Optimisation Algorithm?"
 
-The code BrachistochroneVisualise.py when executed prompts the user which algorithm they would like to use, after which a pygame GUI shows the algorithm iteratively solving the Brachistochrone problem for 500 iterations.
+The code BrachistochroneVisualise.py when executed prompts the user which algorithm they would like to use, after which a pygame GUI shows the algorithm iteratively solving the Brachistochrone problem, N = 25, for 500 iterations:
+
+![Example Test run](/Brachistochrone/examplerun.png)
 
 ### Prerequisites
 
