@@ -16,7 +16,7 @@ pip install numpy, scipy, pygame, cma
 
 The Brachistochrone Problem, posed by Bernouilli in 1696, essentially asks the question "What is the shape of the curve which a mass slides from point A to point B in the least time?" A helpful animation on Wikipedia illustrates the solution to this problem:
 
-(/Brachistochrone/Brachistochrone.gif)
+![Brachistochrone](/Brachistochrone/Brachistochrone.gif)
 
 
 ### Break down into end to end tests
