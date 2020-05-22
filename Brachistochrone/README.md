@@ -4,39 +4,20 @@ This project is an offshoot of my Extended Project Qualification "To what extent
 
 The code BrachistochroneVisualise when executed prompts the user which algorithm they would like to use, after which a pygame GUI shows the algorithm iteratively solving the Brachistochrone problem for 500 iterations.
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
 ### Prerequisites
 
-What things you need to install the software and how to install them
+The code was programmed in Python 3.8.0, and uses the external libraries: NumPy, SciPy, Pygame and cma. Once Python is installed, the following script in command prompt administrator will download the relevant libraries:
 
 ```
-Give examples
+pip install numpy, scipy, pygame, cma
 ```
 
-### Installing
+## The Brachistochrone Problem
 
-A step by step series of examples that tell you how to get a development env running
+The Brachistochrone Problem, posed by Bernouilli in 1696, essentially asks the question "What is the shape of the curve which a mass slides from point A to point B in the least time?" A helpful animation on Wikipedia illustrates the solution to this problem:
 
-Say what the step will be
+(/)
 
-```
-Give the example
-```
-
-And repeat
-
-```
-until finished
-```
-
-End with an example of getting some data out of the system or using it for a little demo
-
-## Running the tests
-
-Explain how to run the automated tests for this system
 
 ### Break down into end to end tests
 
