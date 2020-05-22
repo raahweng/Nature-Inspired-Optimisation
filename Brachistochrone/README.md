@@ -22,7 +22,7 @@ This curve can be approximated using a piecewise slope composed of N line segmen
 
 The algorithms optimise a function that takes in a N-dimensional vector containing the y-coordinates of the line segments that define each slope, and outputs the resulting time to slide down.
 
-### Algorithms
+## Algorithms
 
 I attach a in-depth review of my implementations of these algorithms and how they work, itself an excerpt from my EPQ dissertation. Note that the implementation described in the document has been adapted for use to this specific problem, but the vast majority of information is applicable.
 
