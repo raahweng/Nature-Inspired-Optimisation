@@ -1,6 +1,6 @@
 # Nature Inspired Optimisation Algorithms on the Brachistochrone problem
 
-This project is an offshoot inspired by (but separate to) my Extended Project Qualification "To what extent does an inspiration from Nature result in the creation of an effective Optimisation Algorithm?"
+This project is an offshoot inspired by (but separate to) my Extended Project Qualification "To what extent does an inspiration from Nature result in the creation of an effective Optimisation Algorithm?" It is an educational resource that visually shows the mechanism  and allows the comparison of 6 different Nature-Inspired Metaheuristic algorithms.
 
 The code BrachistochroneVisualise.py when executed prompts the user which algorithm they would like to use, after which a pygame GUI shows the algorithm iteratively solving the Brachistochrone problem, N = 25, for 500 iterations:
 
