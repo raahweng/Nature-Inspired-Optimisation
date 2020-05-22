@@ -14,18 +14,19 @@ pip install numpy, scipy, pygame, cma
 
 ## The Brachistochrone Problem
 
-The Brachistochrone Problem, posed by Bernouilli in 1696, essentially asks the question "What is the shape of the curve which a mass slides from point A to point B in the least time?" A helpful animation on Wikipedia illustrates the solution to this problem:
+The Brachistochrone Problem, posed by Bernouilli in 1696, essentially asks the question "What is the shape of the curve in which a mass slides from point A to point B in the least time?" A helpful animation on Wikipedia illustrates the solution to this problem:
 
 ![Brachistochrone](/Brachistochrone/Brachistochrone.gif)
 
+This curve can be approximated using a piecewise slope composed of N line segments, and thus the time for a mass to slide down this discrete slope can be calculated (assuming instantaneous change of velocity at each vertex).
 
-### Break down into end to end tests
+The algorithms optimise a function that takes in a N-dimensional vector containing the y-coordinates of the line segments that define each slope, and outputs the resulting time to slide down.
 
-Explain what these tests test and why
+### Algorithms
 
-```
-Give an example
-```
+I attach a in-depth review of my implementations of these algorithms
+
+[Algorithms Document](https://gist.github.com/PurpleBooth/b24679402957c63ec426)
 
 ### And coding style tests
 
